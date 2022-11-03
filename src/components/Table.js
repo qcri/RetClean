@@ -81,13 +81,13 @@ const Table = (props) => {
               </Button>
               <Button
                 startIcon={<DoneIcon />}
-                // onClick={() => props.onSaveChanges}
+                onClick={(e) => props.saveChanges()}
               >
                 Save Changes
               </Button>
               <Button
                 startIcon={<ClearIcon />}
-                // onClick={() => props.onRevertChanges}
+                onClick={(e) => props.cancelChanges()}
               >
                 Cancel Changes
               </Button>
@@ -138,11 +138,6 @@ const Table = (props) => {
                 cellStyle: { border: "1px solid #eee" },
               }}
               components={components}
-              // cellEditable={{
-              //   onCellEditApproved: onCellUpdate,
-              //   isCellEditable: (rowData, columnDef) =>
-              //     columnDef.field === "name",
-              // }}
             />
           </StylesProvider>
         </Stack>
