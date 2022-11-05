@@ -1,3 +1,5 @@
+const baseURI = "https://lmimputation.qcri.org";
+
 export function getKCandidates(data, target, k, closedSet, categories) {
   const payload = JSON.stringify({
     table: data,
@@ -6,8 +8,7 @@ export function getKCandidates(data, target, k, closedSet, categories) {
     use_fixed_cats: closedSet,
     given_fixed_cats: categories,
   });
-  const endpoint = "impute_gpt3_react";
-  const uri = `https://imimputation.qcri.org/impute_gpt3_react`;
+  const uri = `${baseURI}/impute_gpt3_react`;
   return fetch(uri, {
     method: "POST",
     headers: {

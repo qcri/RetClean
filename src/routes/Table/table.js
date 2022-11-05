@@ -12,7 +12,9 @@ import Drawer from "../../components/SlideOver";
 
 export const TablePage = () => {
   const loadedDataState = useSelector((state) => state.data.value);
-  const numCols = Object.keys(loadedDataState.dataObject).length;
+  const orginialHeaders = Object.keys(loadedDataState.dataObject);
+  const numCols = orginialHeaders.length;
+  const numRows = loadedDataState.dataObject[orginialHeaders[0]].length;
   const pageDirections =
     "Choose a target column for imputation. You can specify exactly which columns to use for imputation as well as the number of candate values.";
   const [dataState, updateDataState] = useState({
@@ -21,14 +23,15 @@ export const TablePage = () => {
     ...dataToTable(loadedDataState.dataObject),
     kHeaders: [],
     chosenValues: [],
+    chosenKHeaders: [],
   });
   const [anchorState, updateAnchorState] = useState({
-    disable: false,
+    imputePhase: false,
     anchor: false,
     prevIndex: 0,
     targetIndex: numCols - 1,
     selectedPivots: [...Array(numCols)].map((x) => false),
-    kCandidates: 3,
+    numK: 3,
   });
 
   useEffect(() => {
@@ -38,7 +41,6 @@ export const TablePage = () => {
       backgroundColor: "#f50057",
       color: "#FFF",
     };
-
     updateDataState({
       ...dataState,
       columns: columns,
@@ -49,23 +51,57 @@ export const TablePage = () => {
     });
   }, [anchorState.targetIndex, dataState.kHeaders]);
 
+  useEffect(() => {
+    let columns = [...dataState.columns];
+    for (let i = 0; i < dataState.kHeaders.length; i++) {
+      const header = dataState.kHeaders[i];
+      const index = numCols + i;
+      columns[index]["cellStyle"] = (data, rowData) => {
+        let id = rowData["MUI_ID"];
+        return dataState.chosenKHeaders[id] === header
+          ? {
+              backgroundColor: "#ff9800",
+              color: "#FFF",
+              border: "1px solid #eee",
+            }
+          : { border: "1px solid #eee" };
+      };
+    }
+    updateDataState({
+      ...dataState,
+      columns: columns,
+    });
+  }, [dataState.chosenKHeaders]);
+
   const onCellClick = (event, rowData) => {
     const rowIndex = rowData["MUI_ID"];
     const colIndex = event.target["cellIndex"];
-    const value = event.target.getAttribute("value");
-    if (numCols <= colIndex && colIndex < numCols + anchorState.kCandidates) {
-      event.target["bgColor"] = "#ff9800";
-      updateTargetCell(rowIndex, value);
+    let header = dataState.columns[colIndex].title;
+    let value = event.target.getAttribute("value");
+    if (numCols <= colIndex && colIndex < numCols + anchorState.numK) {
+      if (header === dataState.chosenKHeaders[rowIndex]) {
+        let targetHeader = dataState.columns[anchorState.targetIndex].title;
+        value = dataState.dataObject[targetHeader][rowIndex];
+        header = "NONE";
+      }
+      updateTargetCell(rowIndex, value, header);
     }
   };
 
-  const updateTargetCell = (row, value) => {
-    const data = [...dataState.data];
-    const header = dataState.columns[anchorState.targetIndex].title;
-    data[row][header] = value;
+  const updateTargetCell = (row, value, header) => {
+    // const data = [...dataState.data];
+    // const header = dataState.columns[anchorState.targetIndex].title;
+    // data[row][header] = value;
+
+    let chosenValues = [...dataState.chosenValues];
+    chosenValues[row] = value;
+    let chosenKHeaders = [...dataState.chosenKHeaders];
+    chosenKHeaders[row] = header;
     updateDataState({
       ...dataState,
-      data: data,
+      // data: data,
+      chosenValues: chosenValues,
+      chosenKHeaders: chosenKHeaders,
     });
   };
 
@@ -78,6 +114,8 @@ export const TablePage = () => {
 
   const onSelectPivots = (pivots) =>
     updateAnchorState({ ...anchorState, selectedPivots: pivots });
+
+  const onSelectK = (k) => updateAnchorState({ ...anchorState, numK: k });
 
   const onToggleDrawer = (open) => (event) => {
     if (
@@ -97,22 +135,22 @@ export const TablePage = () => {
       }
     }
     const targetName = dataState.columns[anchorState.targetIndex].title;
-    const k = anchorState.kCandidates;
-    const useFixed = true;
+    const k = anchorState.numK;
+    const useFixed = false;
     const givenFixed = null;
 
-    // let kDataArr = await getKCandidatesTest();
-    let kDataArr = await getKCandidates(
-      tableData,
-      targetName,
-      k,
-      useFixed,
-      givenFixed
-    );
+    let kDataArr = await getKCandidatesTest();
+    // let kDataArr = await getKCandidates(
+    //   tableData,
+    //   targetName,
+    //   k,
+    //   useFixed,
+    //   givenFixed
+    // );
     console.log("Received Server Response");
-    let kHeaders = [];
     let kDataObject = {};
-    for (let i = 0; i < kDataArr.length; i++) {
+    let kHeaders = [];
+    for (let i = 0; i < anchorState.numK; i++) {
       let header = Object.keys(kDataArr[i])[0];
       kHeaders.push(header);
       kDataObject[header] = kDataArr[i][header];
@@ -122,8 +160,10 @@ export const TablePage = () => {
       ...dataState,
       ...dataToTable(newDataObject),
       kHeaders: kHeaders,
+      chosenValues: kDataObject[kHeaders[0]],
+      chosenKHeaders: [...Array(numRows)].map((x) => kHeaders[0]),
     });
-    updateAnchorState({ ...anchorState, disable: true });
+    updateAnchorState({ ...anchorState, imputePhase: true });
   };
 
   const onCancelChanges = () => {
@@ -132,7 +172,9 @@ export const TablePage = () => {
       ...dataToTable(dataState.dataObject),
       kHeaders: [],
       chosenValues: [],
+      chosenKHeaders: [],
     });
+    updateAnchorState({ ...anchorState, imputePhase: false });
   };
 
   const onSaveChanges = () => {
@@ -145,7 +187,9 @@ export const TablePage = () => {
       ...dataToTable(newDataObject),
       kHeaders: [],
       chosenValues: [],
+      chosenKHeaders: [],
     });
+    updateAnchorState({ ...anchorState, imputePhase: false });
   };
 
   return (
@@ -164,8 +208,10 @@ export const TablePage = () => {
         filename={dataState.filename}
         columns={dataState.columns}
         data={dataState.data}
-        disableDrawerButton={anchorState.disable}
+        numK={anchorState.numK}
+        imputePhase={anchorState.imputePhase}
         toggleDrawer={onToggleDrawer}
+        selectK={onSelectK}
         callImpute={onCallImpute}
         saveChanges={onSaveChanges}
         cancelChanges={onCancelChanges}

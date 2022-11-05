@@ -1,6 +1,15 @@
 /* eslint-disable */
 import React, { forwardRef, useState } from "react";
-import { Box, Stack, Button, ButtonGroup } from "@mui/material";
+import {
+  Box,
+  Stack,
+  Button,
+  ButtonGroup,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+} from "@mui/material";
 import { StylesProvider, createGenerateClassName } from "@material-ui/styles";
 
 import AddBox from "@mui/icons-material/AddBox";
@@ -24,6 +33,7 @@ import CalculateIcon from "@mui/icons-material/Calculate";
 import ClearIcon from "@mui/icons-material/Clear";
 
 import MaterialTable, { MTableToolbar, MTableHeader } from "material-table";
+import { text } from "d3";
 
 const tableIcons = {
   Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -65,33 +75,57 @@ const Table = (props) => {
               variant="contained"
               aria-label="outlined primary button group"
             >
-              <Button
-                startIcon={<TableChartIcon />}
-                onClick={(e) => props.toggleDrawer(true)(e)}
-                disabled={props.disableDrawerButton}
-              >
-                Select Columns
-              </Button>
-
-              <Button
-                startIcon={<CalculateIcon />}
-                onClick={(e) => props.callImpute()}
-              >
-                Impute Target
-              </Button>
-              <Button
-                startIcon={<DoneIcon />}
-                onClick={(e) => props.saveChanges()}
-              >
-                Save Changes
-              </Button>
-              <Button
-                startIcon={<ClearIcon />}
-                onClick={(e) => props.cancelChanges()}
-              >
-                Cancel Changes
-              </Button>
+              {!props.imputePhase ? (
+                <>
+                  <Button
+                    startIcon={<TableChartIcon />}
+                    onClick={(e) => props.toggleDrawer(true)(e)}
+                  >
+                    Select Columns
+                  </Button>
+                  <Button
+                    startIcon={<CalculateIcon />}
+                    onClick={(e) => props.callImpute()}
+                  >
+                    Impute Target
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button
+                    startIcon={<DoneIcon />}
+                    onClick={(e) => props.saveChanges()}
+                  >
+                    Save Changes
+                  </Button>
+                  <Button
+                    startIcon={<ClearIcon />}
+                    onClick={(e) => props.cancelChanges()}
+                  >
+                    Cancel Changes
+                  </Button>
+                </>
+              )}
             </ButtonGroup>
+
+            {!props.imputePhase ? (
+              <>
+                <FormControl hidden>
+                  <Select
+                    value={props.numK}
+                    onChange={(e) => props.selectK(e.target.value)}
+                  >
+                    <MenuItem value={1}>K = 1</MenuItem>
+                    <MenuItem value={2}>K = 2</MenuItem>
+                    <MenuItem value={3}>K = 3</MenuItem>
+                    <MenuItem value={4}>K = 4</MenuItem>
+                    <MenuItem value={5}>K = 5</MenuItem>
+                  </Select>
+                </FormControl>
+              </>
+            ) : (
+              <></>
+            )}
           </div>
         </div>
       );
@@ -114,8 +148,8 @@ const Table = (props) => {
   };
 
   return (
-    <div>
-      <Box m={10} justifyContent="center" alignItems="center">
+    <div style={{ overflowX: "auto", padding: "20px" }}>
+      <Box justifyContent="center" alignItems="center">
         <Stack direction="row">
           <StylesProvider generateClassName={generateClassName}>
             <MaterialTable
