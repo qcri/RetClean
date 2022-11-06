@@ -112,14 +112,15 @@ export const TablePage = () => {
   };
 
   const onSelectTarget = (target) => {
-    updateAnchorState({
-      ...anchorState,
-      targetIndex: target,
-    });
+    updateAnchorState({ ...anchorState, targetIndex: target });
   };
 
-  const onSelectPivots = (pivots) =>
-    updateAnchorState({ ...anchorState, selectedPivots: pivots });
+  const onSelectPivots = (pivots) => {
+    updateAnchorState({
+      ...anchorState,
+      selectedPivots: pivots,
+    });
+  };
 
   const onSelectK = (k) => updateAnchorState({ ...anchorState, numK: k });
 
@@ -130,6 +131,14 @@ export const TablePage = () => {
     )
       return;
     updateAnchorState({ ...anchorState, anchor: open });
+  };
+
+  const tempPostProcess = (dataObject) => {
+    let kDataObject = {};
+    for (let key of Object.keys(dataObject)) {
+      kDataObject[key] = Object.values(dataObject[key]);
+    }
+    return kDataObject;
   };
 
   const onCallImpute = async () => {
@@ -145,24 +154,30 @@ export const TablePage = () => {
     const useFixed = false;
     const givenFixed = null;
 
-    let { ids, filteredDataObject } = getNullRows(tableData, targetName);
-    let kDataArr = await getKCandidatesTest();
-    // let kDataArr = await getKCandidates(
-    //   filteredDataObject,
-    //   targetName,
-    //   k,
-    //   useFixed,
-    //   givenFixed
-    // );
+    let { ids, dataObjectFiltered } = getNullRows(tableData, targetName);
+    // let kDataArr = await getKCandidatesTest();
+    let kDataObjectFiltered = await getKCandidates(
+      dataObjectFiltered,
+      targetName,
+      k,
+      useFixed,
+      givenFixed
+    );
     console.log("Received Server Response");
-    let { kHeaders, kDataObject } = alignImputed(kDataArr, ids, k, numRows);
-    let newDataObject = { ...dataState.dataObject, ...kDataObject };
+    // kDataObjectFiltered = tempPostProcess(kDataObjectFiltered);
+
+    let { kHeaders, kDataObjectFilled } = alignImputed(
+      kDataObjectFiltered,
+      ids,
+      numRows
+    );
+    let newDataObject = { ...dataState.dataObject, ...kDataObjectFilled };
 
     let chosenValues = [...dataState.dataObject[targetName]];
     let chosenKHeaders = [...Array(numRows)].map((x) => targetName);
     for (let id of ids) {
       const k1 = kHeaders[0];
-      chosenValues[id] = kDataObject[k1][id];
+      chosenValues[id] = kDataObjectFilled[k1][id];
       chosenKHeaders[id] = k1;
     }
 

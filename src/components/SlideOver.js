@@ -56,6 +56,20 @@ const TemporaryDrawer = (props) => {
               <Item elevation={0}>Pivot Columns</Item>
               <FormControl sx={{ padding: "0px 15px" }}>
                 <FormGroup>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={props.pivots.every((v) => v === true)}
+                        onChange={(e) => {
+                          let newPivots = [...props.pivots].map(
+                            (x) => e.target.checked
+                          );
+                          props.selectPivots(newPivots);
+                        }}
+                      />
+                    }
+                    label={"All"}
+                  />
                   {props.columns.map((col, index) => (
                     <FormControlLabel
                       control={

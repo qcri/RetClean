@@ -59,35 +59,34 @@ export function dataToTable(dataObject) {
 export function getNullRows(dataObject, target) {
   const headers = Object.keys(dataObject);
   let ids = [];
-  let filteredDataObject = {};
-  for (let header of headers) filteredDataObject[header] = [];
+  let dataObjectFiltered = {};
+  for (let header of headers) dataObjectFiltered[header] = [];
   for (let i = 0; i < dataObject[headers[0]].length; i++) {
     if (dataObject[target][i] === "NULL") {
       ids.push(i);
       for (let header of headers)
-        filteredDataObject[header].push(dataObject[header][i]);
+        dataObjectFiltered[header].push(dataObject[header][i]);
     }
   }
-  return { ids, filteredDataObject };
+  return { ids, dataObjectFiltered };
 }
 
-export function alignImputed(objectArr, ids, k, numRows) {
-  let kDataObject = {};
-  let kHeaders = [];
-  for (let i = 0; i < k; i++) {
-    let header = Object.keys(objectArr[i])[0];
-    kHeaders.push(header);
-    let arr = objectArr[i][header];
-    kDataObject[header] = [];
+export function alignImputed(kDataObject, ids, numRows) {
+  let kDataObjectFilled = {};
+  let kHeaders = Object.keys(kDataObject);
+  for (let i = 0; i < kHeaders.length; i++) {
+    let header = kHeaders[i];
+    let arr = kDataObject[header];
+    kDataObjectFilled[header] = [];
     let t = 0;
     for (let j = 0; j < numRows; j++) {
       if (t < ids.length && ids[t] === j) {
-        kDataObject[header].push(arr[t]);
+        kDataObjectFilled[header].push(arr[t]);
         t++;
       } else {
-        kDataObject[header].push("");
+        kDataObjectFilled[header].push("");
       }
     }
   }
-  return { kHeaders, kDataObject };
+  return { kHeaders, kDataObjectFilled };
 }
