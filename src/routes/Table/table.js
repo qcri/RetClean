@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import {
   dataToTable,
+  getNullRows,
+  alignImputed,
   getKCandidates,
   getKCandidatesTest,
 } from "../../services/table";
@@ -78,7 +80,11 @@ export const TablePage = () => {
     const colIndex = event.target["cellIndex"];
     let header = dataState.columns[colIndex].title;
     let value = event.target.getAttribute("value");
-    if (numCols <= colIndex && colIndex < numCols + anchorState.numK) {
+    if (
+      value !== "" &&
+      numCols <= colIndex &&
+      colIndex < numCols + anchorState.numK
+    ) {
       if (header === dataState.chosenKHeaders[rowIndex]) {
         let targetHeader = dataState.columns[anchorState.targetIndex].title;
         value = dataState.dataObject[targetHeader][rowIndex];
@@ -139,29 +145,33 @@ export const TablePage = () => {
     const useFixed = false;
     const givenFixed = null;
 
+    let { ids, filteredDataObject } = getNullRows(tableData, targetName);
     let kDataArr = await getKCandidatesTest();
     // let kDataArr = await getKCandidates(
-    //   tableData,
+    //   filteredDataObject,
     //   targetName,
     //   k,
     //   useFixed,
     //   givenFixed
     // );
     console.log("Received Server Response");
-    let kDataObject = {};
-    let kHeaders = [];
-    for (let i = 0; i < anchorState.numK; i++) {
-      let header = Object.keys(kDataArr[i])[0];
-      kHeaders.push(header);
-      kDataObject[header] = kDataArr[i][header];
-    }
+    let { kHeaders, kDataObject } = alignImputed(kDataArr, ids, k, numRows);
     let newDataObject = { ...dataState.dataObject, ...kDataObject };
+
+    let chosenValues = [...dataState.dataObject[targetName]];
+    let chosenKHeaders = [...Array(numRows)].map((x) => targetName);
+    for (let id of ids) {
+      const k1 = kHeaders[0];
+      chosenValues[id] = kDataObject[k1][id];
+      chosenKHeaders[id] = k1;
+    }
+
     updateDataState({
       ...dataState,
       ...dataToTable(newDataObject),
       kHeaders: kHeaders,
-      chosenValues: kDataObject[kHeaders[0]],
-      chosenKHeaders: [...Array(numRows)].map((x) => kHeaders[0]),
+      chosenValues: chosenValues,
+      chosenKHeaders: chosenKHeaders,
     });
     updateAnchorState({ ...anchorState, imputePhase: true });
   };

@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Stack, TextField, Button } from "@mui/material";
+import { Box, Stack, Button, TextField } from "@mui/material";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 
 const FileInput = (props) => {

@@ -1,37 +1,35 @@
 /* eslint-disable */
-import React, { forwardRef, useState } from "react";
+import React, { forwardRef } from "react";
 import {
   Box,
   Stack,
   Button,
   ButtonGroup,
   FormControl,
-  InputLabel,
   Select,
   MenuItem,
 } from "@mui/material";
+import {
+  AddBox,
+  ArrowDownward,
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  Clear,
+  DeleteOutline,
+  Edit,
+  FilterList,
+  FirstPage,
+  LastPage,
+  Remove,
+  SaveAlt,
+  Search,
+  ViewColumn,
+  Done,
+  TableChart,
+  Calculate,
+} from "@mui/icons-material";
 import { StylesProvider, createGenerateClassName } from "@material-ui/styles";
-
-import AddBox from "@mui/icons-material/AddBox";
-import ArrowDownward from "@mui/icons-material/ArrowDownward";
-import Check from "@mui/icons-material/Check";
-import ChevronLeft from "@mui/icons-material/ChevronLeft";
-import ChevronRight from "@mui/icons-material/ChevronRight";
-import Clear from "@mui/icons-material/Clear";
-import DeleteOutline from "@mui/icons-material/DeleteOutline";
-import Edit from "@mui/icons-material/Edit";
-import FilterList from "@mui/icons-material/FilterList";
-import FirstPage from "@mui/icons-material/FirstPage";
-import LastPage from "@mui/icons-material/LastPage";
-import Remove from "@mui/icons-material/Remove";
-import SaveAlt from "@mui/icons-material/SaveAlt";
-import Search from "@mui/icons-material/Search";
-import ViewColumn from "@mui/icons-material/ViewColumn";
-import DoneIcon from "@mui/icons-material/Done";
-import TableChartIcon from "@mui/icons-material/TableChart";
-import CalculateIcon from "@mui/icons-material/Calculate";
-import ClearIcon from "@mui/icons-material/Clear";
-
 import MaterialTable, { MTableToolbar, MTableHeader } from "material-table";
 import { text } from "d3";
 
@@ -72,34 +70,50 @@ const Table = (props) => {
           <MTableToolbar {...componentProps} />
           <div style={{ padding: "15px 15px 15px 15px" }}>
             <ButtonGroup
+              size="large"
               variant="contained"
               aria-label="outlined primary button group"
             >
               {!props.imputePhase ? (
                 <>
                   <Button
-                    startIcon={<TableChartIcon />}
+                    startIcon={<TableChart />}
                     onClick={(e) => props.toggleDrawer(true)(e)}
                   >
                     Select Columns
                   </Button>
                   <Button
-                    startIcon={<CalculateIcon />}
+                    startIcon={<Calculate />}
                     onClick={(e) => props.callImpute()}
                   >
                     Impute Target
+                  </Button>
+                  <Button>
+                    <FormControl size="small">
+                      <Select
+                        sx={{ color: "#FFF", Border: "none" }}
+                        value={props.numK}
+                        onChange={(e) => props.selectK(e.target.value)}
+                      >
+                        <MenuItem value={1}>K = 1</MenuItem>
+                        <MenuItem value={2}>K = 2</MenuItem>
+                        <MenuItem value={3}>K = 3</MenuItem>
+                        <MenuItem value={4}>K = 4</MenuItem>
+                        <MenuItem value={5}>K = 5</MenuItem>
+                      </Select>
+                    </FormControl>
                   </Button>
                 </>
               ) : (
                 <>
                   <Button
-                    startIcon={<DoneIcon />}
+                    startIcon={<Done />}
                     onClick={(e) => props.saveChanges()}
                   >
                     Save Changes
                   </Button>
                   <Button
-                    startIcon={<ClearIcon />}
+                    startIcon={<Clear />}
                     onClick={(e) => props.cancelChanges()}
                   >
                     Cancel Changes
@@ -107,25 +121,6 @@ const Table = (props) => {
                 </>
               )}
             </ButtonGroup>
-
-            {!props.imputePhase ? (
-              <>
-                <FormControl hidden>
-                  <Select
-                    value={props.numK}
-                    onChange={(e) => props.selectK(e.target.value)}
-                  >
-                    <MenuItem value={1}>K = 1</MenuItem>
-                    <MenuItem value={2}>K = 2</MenuItem>
-                    <MenuItem value={3}>K = 3</MenuItem>
-                    <MenuItem value={4}>K = 4</MenuItem>
-                    <MenuItem value={5}>K = 5</MenuItem>
-                  </Select>
-                </FormControl>
-              </>
-            ) : (
-              <></>
-            )}
           </div>
         </div>
       );
