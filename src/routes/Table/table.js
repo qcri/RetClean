@@ -5,7 +5,6 @@ import {
   getNullRows,
   alignImputed,
   getKCandidates,
-  getKCandidatesTest,
 } from "../../services/table";
 
 import Directions from "../../components/Directions";
