@@ -15,3 +15,5 @@ After all the necessary modules are downloaded, launch the local web client with
 ```
 npm start
 ```
+
+Then view the client at url: [http://localhost:3000/](http://localhost:3000/)
