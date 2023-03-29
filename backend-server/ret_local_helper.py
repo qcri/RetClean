@@ -30,7 +30,7 @@ def make_pairs(query_tuple, retrieved_list):
 
 def matching(all_retrieved, # format = return by search_index()
              all_query_tuples, # str serialized,
-             model_directory = './models/roberta_matcher_base'
+             model_directory = 'shamz15531/roberta_tuple_matcher_base'
              ):
     
 
