@@ -17,6 +17,10 @@ from reranker_helper import *
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
+# Make models folder if it doesnt exist
+if not os.path.exists("./models"):
+    os.makedirs("./models")
+
 app = Flask('app')
 cors = CORS(app)
 app.config["CORS_HEADER"] = 'Content-Type'
