@@ -71,7 +71,13 @@ def recieve_request_set(info):
         reranker_type = None
 
     custom_prompt = info["custom_prompt"]
-
+    
+    # Write Datalake CSV Files
+    write_datalake_files(info["datalake"])
+    if info["datalake"] == None or info["datalake"] == []:
+        create_index = False
+    else:
+        create_index = True
     
     # Check needed params
     if json_data == None or ditry_column == None or reasoner_type == None:
