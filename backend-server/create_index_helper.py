@@ -111,7 +111,7 @@ def create_index(datalake_path, # Path to <FOLDER> containing all csv files
 
     # FAISS Branch
     if index_type == 'FAISS':
-        if not os.path.exists("./faiss_index/{}".format(index_name)):
+        if os.path.exists("./faiss_index/{}".format(index_name)):
             return True
         else:
             # Create embeddings for each tuple in aggregated table
