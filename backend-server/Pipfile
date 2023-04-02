@@ -1,0 +1,22 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+pandas = "*"
+openai = "*"
+sentence-transformers = "*"
+transformers = "*"
+torch = "*"
+flask = "*"
+flask-cors = "*"
+elasticsearch = "*"
+datasets = "*"
+tqdm = "*"
+faiss-cpu = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.9"
