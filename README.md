@@ -1,6 +1,6 @@
-# AI for DP
+# RetClean
 
-This is the official repository for the AI for Data Preparation project under QCRI. AI for DP is a tool that leverages language models for data preparation operations, such as imputation.
+This is the official repository for the RetClean data repair project under QCRI. RetClean is a tool that leverages language models for data cleaning operations, such as imputation and error detection.
 
 ## Installation and Use
 
