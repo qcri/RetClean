@@ -23,8 +23,8 @@ if not os.path.exists("./models"):
     os.makedirs("./models")
 
 app = Flask('app')
-cors = CORS(app)
-app.config["CORS_HEADER"] = 'Content-Type'
+CORS(app)
+
 
 ### Load some of the required models
 colbert_reranker = load_encoder_reranker("colbert")
@@ -34,7 +34,7 @@ faiss_tokenizer_l, faiss_model_l = load_tokenizer_encoder_faiss('facebook/dpr-ct
 ### Parse Request and make dictionary of relevant params. Set all not present to None
 def recieve_request_set(info):
     json_data = info["json_data"] # Taken from request as is
-    ditry_column = info["ditry_column"] # Taken from request as is
+    dirty_column = info["dirty_column"] # Taken from request as is
     
     # index_name is either provided by the user, or default one is allotted
     if info["index_name"] == None:
@@ -91,7 +91,7 @@ def recieve_request_set(info):
     ### Overwrite index
 
     # Check needed params
-    if json_data == None or ditry_column == None or reasoner_type == None:
+    if json_data == None or dirty_column == None or reasoner_type == None:
         raise ValueError("Data, Dirty Column, and Reasoner Type must be provided")
     
     # Local reasoner but no index chosen
@@ -104,7 +104,7 @@ def recieve_request_set(info):
 
     return {
         "json_data":json_data,
-        "dirty_column":ditry_column,
+        "dirty_column":dirty_column,
         "index_name" : index_name,
         "index_type":index_type,
         "reasoner_type":reasoner_type,
@@ -117,7 +117,13 @@ def recieve_request_set(info):
     }
 
 @app.route('/repair_table', methods=['POST'])
+# @cross_origin()
 def repair_table():
+
+    print(request.headers)
+    print(request.form)
+    print(request.files)
+    print("%"*100)
 
     params = recieve_request_set(request.json)
 
@@ -141,7 +147,6 @@ def repair_table():
             "table" : "",
             "index" : ""
                     } for i in range(size_of_repairs)] 
-
 
         return ret_results
 
