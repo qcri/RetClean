@@ -88,10 +88,9 @@ export const MainPage = () => {
       finetune_file_name: fineTune.fileName,
       finetuning_set: fineTune.content,
     };
-    let repairs = await getRepairs("retrieval_based", {});
-    const repairs2 = await getRepairs2(requestObj);
 
-    repairs = repairs2;
+    // const repairs = await getRepairs("retrieval_based", {});
+    const repairs = await getRepairs2(requestObj);
 
     let marked = new Set();
     let content = [...dirtyData.content];

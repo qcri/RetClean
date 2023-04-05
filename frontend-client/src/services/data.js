@@ -1,25 +1,14 @@
 import * as d3 from "d3";
-import wretch from "wretch";
 
 export async function getRepairs(type, payload) {
-  const uri = `http://localhost:3000/${type}`;
-  return wretch(uri)
-    .get()
-    .notFound((error) => {
-      alert("404");
-    })
-    .unauthorized((error) => {
-      alert("401");
-    })
-    .res((response) => response.json())
-    .catch((error) => {
-      alert(error);
-    });
+  const uri = `http://localhost:4000/${type}`;
+  return fetch(uri, {
+    method: "GET",
+  }).then((response) => response.json());
 }
 
 export async function getRepairs2(data) {
   const uri = `http://localhost:5000/repair_table`;
-  const body = JSON.stringify(data);
   let formData = new FormData();
   formData.append("json_data", JSON.stringify(data["json_data"]));
   formData.append("entity_described", data["entity_described"]);
