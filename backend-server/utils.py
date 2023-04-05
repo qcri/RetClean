@@ -69,8 +69,8 @@ def write_datalake_files(list_of_csvs, index_name): # index_name is the folder n
 def recieved_json_to_pdf(json_dict):
     if json_dict == None:
         return None
-    data = json.loads(json_dict)
-    df = pd.DataFrame.from_records(data)
+    # data = json.loads(json_dict)
+    df = pd.DataFrame(json_dict)
     return df
 
 # Process impute table (make list of serialized tuples)
