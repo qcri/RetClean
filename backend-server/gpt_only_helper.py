@@ -4,10 +4,15 @@ import torch
 import openai
 import time
 import torch
+from transformers import AutoModelForQuestionAnswering, AutoTokenizer, pipeline
 from utils import *
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
     
+# Load Post Processing Models
+roberta_qa_model = AutoModelForQuestionAnswering.from_pretrained("shamz15531/roberta_repair_extractor")
+roberta_qa_tokenizer = AutoTokenizer.from_pretrained("shamz15531/roberta_repair_extractor")
+
 def custom_prompt_convert(json_data, custom_prompt, impute_att):
     df = recieved_json_to_pdf(json_data)
     prompt_words = custom_prompt.split(' ')
@@ -23,6 +28,32 @@ def custom_prompt_convert(json_data, custom_prompt, impute_att):
         final_prompt_list.append(' '.join(ret_prompt_words))
     
     return final_prompt_list
+
+def answer_extraction_from_response_gpt_only(response_list, impute_col, qa_model = roberta_qa_model, qa_tokenizer = roberta_qa_tokenizer):
+    extracted_answer_list = []
+    for response in response_list:
+        question = "What is the {} value for Tuple 1?".format(impute_col)
+        context = response
+        inputs = qa_tokenizer(question, context, add_special_tokens=True, return_tensors="pt")
+        input_ids = inputs["input_ids"].tolist()[0] # the list of all indices of words in question + context
+
+        # text_tokens = qa_tokenizer.convert_ids_to_tokens(input_ids) # Get the tokens for the question + context
+        answer_start_scores, answer_end_scores = qa_model(**inputs, return_dict=False)
+
+        answer_start = torch.argmax(answer_start_scores)  # Get the most likely beginning of answer with the argmax of the score
+        answer_end = torch.argmax(answer_end_scores) + 1  # Get the most likely end of answer with the argmax of the score
+
+        answer = qa_tokenizer.convert_tokens_to_string(qa_tokenizer.convert_ids_to_tokens(input_ids[answer_start:answer_end]))
+
+        if answer != "<s>":
+            ret_response = answer
+        else:
+            ret_response = context
+
+        extracted_answer_list.append(ret_response)
+
+    return extracted_answer_list
+
 
 def send_gpt_prompts_single(all_query_tuples_serialized, missing_att, custom_prompt_list = None):
 
@@ -45,7 +76,6 @@ def send_gpt_prompts_single(all_query_tuples_serialized, missing_att, custom_pro
         for i in range(len(custom_prompt_list)):
             query = custom_prompt_list[i]
             prompt="<|im_start|>system\nThe system is an AI assistant that helps users get relevant information and answers.\n<|im_end|>\n<|im_start|>user\n{}\n<|im_end|>\n<|im_start|>assistant".format(query)
-            print(prompt)
             response1 = openai.Completion.create(engine="gpt3_davinci_imputer", prompt=prompt,
                                             temperature=0.2,
                                             max_tokens=32,
@@ -71,7 +101,9 @@ def send_gpt_prompts_single(all_query_tuples_serialized, missing_att, custom_pro
             txt = response1["choices"][0]["text"]
             final_answers.append(txt)
             time.sleep(0.3)
-    return final_answers
+
+    extracted_final_repairs = answer_extraction_from_response_gpt_only(final_answers, missing_att)
+    return extracted_final_repairs
         
 
 print("LOADED gpt_only_helper")
