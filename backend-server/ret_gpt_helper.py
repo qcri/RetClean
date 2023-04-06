@@ -14,7 +14,7 @@ roberta_qa_tokenizer = AutoTokenizer.from_pretrained("shamz15531/roberta_repair_
 
 
 # Helper Func to filter out not matched responses from GPT
-def keep_first_positive_rsponse(reponses_list):
+def keep_first_positive_response(reponses_list):
     final_ret_responses = []
     for i in range(len(reponses_list)):
         query_responses = reponses_list[i]
@@ -50,7 +50,7 @@ def answer_extraction_from_response(response_list, impute_col, qa_model = robert
         answer = qa_tokenizer.convert_tokens_to_string(qa_tokenizer.convert_ids_to_tokens(input_ids[answer_start:answer_end]))
 
         ret_response = response.copy()
-
+ 
         if answer != "<s>":
             ret_response["repair"] = answer
 
@@ -85,7 +85,7 @@ def send_gpt_prompts_with_ret(all_query_tuples_serialized, the_encoder, the_toke
         # print(query_tuple, "\n\n")
 
         retrieved = search_index(query_tuple, # str format, serialized
-                         "./tmp/aggregation_v1.csv",
+                         "./tmp/aggregation_{}.csv".format(index_name),
                          "./faiss_index/", 
                          index_name, #es_attempt_2 for es ,  faiss_attempt_4 for faiss
                          the_encoder,
@@ -126,10 +126,11 @@ def send_gpt_prompts_with_ret(all_query_tuples_serialized, the_encoder, the_toke
         all_final_results.append(temp_results)
     
     # Keep First Positive Responses Only for Each Query Tuple
-    all_final_results_positive_only = keep_first_positive_rsponse(all_final_results)
+    all_final_results_positive_only = keep_first_positive_response(all_final_results)
 
     # Extract Answers
     all_final_results_positive_only_post_processed = answer_extraction_from_response(all_final_results_positive_only,missing_att)
+    
 
     return all_final_results_positive_only_post_processed
 

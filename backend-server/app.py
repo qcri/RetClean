@@ -4,6 +4,7 @@ import time
 import os
 import torch
 import flask
+import json
 from flask import Flask, jsonify, request, render_template
 from flask_cors import CORS, cross_origin
 
@@ -32,52 +33,86 @@ crossencoder_reranker = load_encoder_reranker("crossencoder")
 faiss_tokenizer_l, faiss_model_l = load_tokenizer_encoder_faiss('facebook/dpr-ctx_encoder-single-nq-base', 'facebook/dpr-ctx_encoder-single-nq-base')
 
 ### Parse Request and make dictionary of relevant params. Set all not present to None
-def recieve_request_set(info):
+def recieve_request_set(info, files):
     json_data = info["json_data"] # Taken from request as is
     dirty_column = info["dirty_column"] # Taken from request as is
     
     # index_name is either provided by the user, or default one is allotted
-    if info["index_name"] == None:
+    if info["index_name"] == None or info["index_name"] == "" or info["index_name"] == 'null':
         index_name = "temp_index_internal"
     else:
         index_name = info["index_name"]
 
     # entity_described shpuld be given or object if none provided
-    if info["entity_described"] == None or info["entity_described"] == "":
+    if info["entity_described"] == None or info["entity_described"] == "" or info["entity_described"] == 'null':
         entity_described = "Object"
     else:
         entity_described = info["entity_described"]
 
-
+    # print('type(info["index_type"])', type(info["index_type"]))
+    if type(info["index_type"]) != dict and type(info["index_type"]) == str:
+        index_type_dict = json.loads(info["index_type"])
+    elif type(info["index_type"]) == dict:
+        index_type_dict = info["index_type"]
+    else:
+        raise ValueError("index_type not in correct format")
+    
+    # print('type(index_type_dict)', type(index_type_dict))
+    # print('index_type_dict',index_type_dict)
     # set val for index_type
-    if (info["index_type"]["ES"] == True and info["index_type"]["FAISS"] == True):
+    if (index_type_dict["ES"] == True and index_type_dict["FAISS"] == True):
         raise ValueError("Atmost 1 Index Type value must be True")
-    elif info["index_type"]["ES"] == True:
+    elif index_type_dict["ES"] == True:
         index_type = "ES"
-    elif info["index_type"]["FAISS"] == True:
+    elif index_type_dict["FAISS"] == True:
         index_type = "FAISS"
     else:
         index_type = None
 
+
+    # print('type(info["reasoner_type"])', type(info["reasoner_type"]))
+    if type(info["reasoner_type"]) != dict and type(info["reasoner_type"]) == str:
+        reasoner_type_dict = json.loads(info["reasoner_type"])
+    elif type(info["reasoner_type"]) == dict:
+        reasoner_type_dict = info["reasoner_type"]
+    else:
+        raise ValueError("reasoner_type not in correct format")
+    reasoner_type_dict = json.loads(info["reasoner_type"])
+    # print('type(index_type_dict)', type(reasoner_type_dict))
+    # print('index_type_dict',reasoner_type_dict)
     # set val for reasoner
-    if (info["reasoner_type"]["chat"] == True and info["reasoner_type"]["local"] == True) or (info["reasoner_type"]["chat"] == False and info["reasoner_type"]["local"] == False):
+    if (reasoner_type_dict["chat"] == True and reasoner_type_dict["local"] == True) or (reasoner_type_dict["chat"] == False and reasoner_type_dict["local"] == False):
         raise ValueError("Only & atleast 1 Reasoner type value must be True")
-    elif info["reasoner_type"]["chat"] == True:
+    elif reasoner_type_dict["chat"] == True:
         reasoner_type = "chat"
-    elif info["reasoner_type"]["local"] == True:
+    elif reasoner_type_dict["local"] == True:
         reasoner_type = "local"
     else:
         reasoner_type = None
 
     # set finetuning value
-    finetuning_set = recieved_json_to_pdf(info["finetuning_set"])
+    try:
+        finetuning_set = pd.read_csv(files["finetuning_set"])
+    except:
+        finetuning_set = None
 
     # reranker type
-    if info["reranker_type"]["colbert"] == True and info["reranker_type"]["crossencoder"] == True:
+    # print('type(info["reranker_type"])', type(info["reranker_type"]))
+    if type(info["reranker_type"]) != dict and type(info["reranker_type"]) == str:
+        reranker_type_dict = json.loads(info["reranker_type"])
+    elif type(info["reranker_type"]) == dict:
+        reranker_type_dict = info["reranker_type"]
+    else:
+        raise ValueError("reasoner_type not in correct format")
+    reranker_type_dict = json.loads(info["reranker_type"])
+    # print('type(index_type_dict)', type(reranker_type_dict))
+    # print('index_type_dict',reranker_type_dict)
+ 
+    if reranker_type_dict["colbert"] == True and reranker_type_dict["crossencoder"] == True:
         raise ValueError("Atmost 1 Reasoner type value must be True")
-    elif info["reranker_type"]["colbert"] == True:
+    elif reranker_type_dict["colbert"] == True:
         reranker_type = "colbert"
-    elif info["reranker_type"]["crossencoder"] == True:
+    elif reranker_type_dict["crossencoder"] == True:
         reranker_type = "crossencoder"
     else:
         reranker_type = None
@@ -86,7 +121,7 @@ def recieve_request_set(info):
     custom_prompt = info["custom_prompt"]
     
     ### Write Datalake CSV Files
-    datalake_path, create_index_mode = write_datalake_files(info["datalake"], index_name) # None when no retrieval is to be done
+    datalake_path, create_index_mode = write_datalake_files(files, index_name) # None when no retrieval is to be done
     
     ### Overwrite index
 
@@ -99,6 +134,7 @@ def recieve_request_set(info):
         raise ValueError("For local model, retrieval method must be specified")
     
     # Datalake path found (either datalake given or index name or both) but no index_type provided
+    # print("datalake_path", datalake_path)
     if datalake_path != None and index_type == None:
         raise ValueError("Retrieval chosen but no index_type provided. or no retrieval make sure index_name and datalake are not provided")
 
@@ -120,19 +156,29 @@ def recieve_request_set(info):
 # @cross_origin()
 def repair_table():
 
-    print(request.headers)
-    print(request.form)
-    print(request.files)
+    # print("request.headers",request.headers)
+    # print("request.form",request.form)
+    # print("%"*100)
+    form_as_dict = request.form.to_dict()
+    # print("type(form_as_dict)",type(form_as_dict))
+    print("form_as_dict", form_as_dict)
+    print("%"*100)
+    files_as_dict = request.files.to_dict()
+    # print("type(files_as_dict)",type(files_as_dict))
+    print("files_as_dict", files_as_dict)
     print("%"*100)
 
-    params = recieve_request_set(request.json)
+    # print("PANDAS READING TEST")
+    # df = pd.read_csv(files_as_dict['finetuning_set'])
+    
+    params = recieve_request_set(form_as_dict,files_as_dict)
 
     ##### GPT ONLY - Scenario 1
     if params["reasoner_type"] == "chat" and params["index_type"] == None:
         
         ### Load All Query Tuples
         # Convert to Custom Prompt if
-        if params["custom_prompt"] != None and params["custom_prompt"] != "":
+        if params["custom_prompt"] != None and params["custom_prompt"] != "" and params["custom_prompt"] != 'null':
             query_tuples = custom_prompt_convert(params["json_data"], params["custom_prompt"], params["dirty_column"])
             repairs = send_gpt_prompts_single(None, params["dirty_column"], custom_prompt_list = query_tuples)
         else:
@@ -147,7 +193,9 @@ def repair_table():
             "table" : "",
             "index" : ""
                     } for i in range(size_of_repairs)] 
-
+        
+        print("OBJECT RETURNED TO FRONT END:")
+        print(ret_results)
         return ret_results
 
     ##### Ret + GPT - Scenario 2
@@ -161,12 +209,17 @@ def repair_table():
         main_create_index(params["datalake_path"], params["index_name"], chosen_index_type = params["index_type"], create_index_mode = params["create_index_mode"])
 
         # Create Query Tuples
+        print('params["json_data"]', params["json_data"])
         query_tuples = process_impute_table_from_json(params["json_data"], params["dirty_column"])
 
         # Send to GPT RET Func
-        return send_gpt_prompts_with_ret(query_tuples, faiss_model_l, faiss_tokenizer_l, params["dirty_column"],
+        ret_val = send_gpt_prompts_with_ret(query_tuples, faiss_model_l, faiss_tokenizer_l, params["dirty_column"],
                                          reranker_type = params["reranker_type"], index_name = params["index_name"],
                                            index_type = params["index_type"], object_imp = params["entity_described"])
+        
+        print("OBJECT RETURNED TO FRONT END:")
+        print(ret_val)
+        return ret_val
 
     ##### Ret + Local - Scenario 3
     elif params["reasoner_type"] == "local" and params["index_type"] != None:
@@ -186,7 +239,7 @@ def repair_table():
 
 
         # Check if finetuning required 
-        if type(params["finetuning_set"]) == pd.core.frame.DataFrame:
+        if type(params["finetuning_set"]) == pd.core.frame.DataFrame and params["finetuning_set"].shape[0] > 0:
             if not os.path.exists("./finetuning_sets/"):
                 os.makedirs("./finetuning_sets/")
 
@@ -220,12 +273,14 @@ def repair_table():
                     retrieved_set_l = cross_encoder_based_rerank(query_t, retrieved_set_l, reranker_model)
 
                 all_retrieved_sets.append(retrieved_set_l)
-        
+
+        # print("all_retrieved_sets", all_retrieved_sets)
+
         matched_retrieved_sets = matching(all_retrieved_sets, # format = return by search_index()
                  query_tuples, # str serialized,
                  model_directory = matcher_directory
                 )
-        
+        # print("matched_retrieved_sets", matched_retrieved_sets)
         # Loop over query tuples again to extract value
         if len(query_tuples) != len(matched_retrieved_sets):
             raise ValueError("Number of matched retrieved sets does not equal the number of query tuples")
@@ -236,13 +291,15 @@ def repair_table():
 
         all_extracted_value_objects = []
         for j in range(len(matched_retrieved_sets)):
+            print("matched_retrieved_sets[j]", matched_retrieved_sets[j])
             all_extracted_value_objects.append(extraction(matched_retrieved_sets[j],
                                                         params["dirty_column"], # <str> impute attribute name
                                                         mode = "ST", # ST for 'SentenceTransformers' or GPT for GPT3/3.5
                                                         reasoner_model = the_extractor
                                                         )
                                                 )
-            
+        print("OBJECT RETURNED TO FRONT END:")
+        print(all_extracted_value_objects)
         return all_extracted_value_objects
     else:
         return None

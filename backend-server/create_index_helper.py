@@ -99,7 +99,7 @@ def create_index(datalake_path, # Path to <FOLDER> containing all csv files
     if tokenizer == None:
         tokenizer = DPRContextEncoderTokenizer.from_pretrained('facebook/dpr-ctx_encoder-single-nq-base', truncation = True, max_length = 512)
     
-
+    # print("serialized_data_path", serialized_data_path)
     # Aggregate all tables in datalake
     if os.path.isfile(serialized_data_path):
         df = pd.read_csv(serialized_data_path)
@@ -135,6 +135,7 @@ def create_index(datalake_path, # Path to <FOLDER> containing all csv files
         if create_index_mode == "check_index" and es_client.indices.exists(index=index_name):
             return True
         elif create_index_mode == "create_index" and es_client.indices.exists(index=index_name):
+            # print("CREATING NEW INDEX")
             try:
                 es_client.options(ignore_status=[400,404]).indices.delete(index=index_name)
             except:

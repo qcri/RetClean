@@ -31,9 +31,10 @@ def process_impute_table(path, impute_att, prepare_for_test = False):
     return ret
 
 # Write all csv files to datalake folder
-def write_datalake_files(list_of_csvs, index_name): # index_name is the folder name in ./datalake for this datalake
+def write_datalake_files(files_dict, index_name): # index_name is the folder name in ./datalake for this datalake
     # No datalake provded
-    if list_of_csvs == None or list_of_csvs == [] or list_of_csvs == [{} , {}]:
+    # print("files_dict INSIDE FUNC", files_dict)
+    if files_dict == None or files_dict == [] or list(files_dict.keys()) == ["finetuning_set"]:
         # Case 1: No datalake , no index_name [Meaning no Retrieval to be done]
         if index_name == "temp_index_internal":
             return None, "no_retrieval"
@@ -57,26 +58,27 @@ def write_datalake_files(list_of_csvs, index_name): # index_name is the folder n
         # Make New One
         os.makedirs("./datalakes/{}".format(index_name))
         
-        # Loop over list of csvs
-        # write each one to new folder path
-        # .
-        # .
-        # .
-        ####
+        for fname, data in files_dict.items():
+            if fname != "finetuning_set":
+                pd.read_csv(data).to_csv("./datalakes/{}/{}.csv".format(index_name,fname.replace(".csv","")), index=False)
+
         return "./datalakes/{}".format(index_name), "create_index"
 
 # Takes JSON files form front end and returns Pandas DF
-def recieved_json_to_pdf(json_dict):
-    if json_dict == None:
+def recieved_json_to_pdf(json_data):
+    if json_data == None:
         return None
     # data = json.loads(json_dict)
-    df = pd.DataFrame(json_dict)
+    if type(json_data) != dict and type(json_data) == str:
+        json_data_dict = json.loads(json_data)
+    df = pd.DataFrame.from_dict(json_data_dict)
     return df
 
 # Process impute table (make list of serialized tuples)
 def process_impute_table_from_json(json_data, impute_att, prepare_for_test = False):
     ret = []
     df = recieved_json_to_pdf(json_data)
+    
     if prepare_for_test:
         df = df[[x for x in list(df.columns) if x != impute_att]]
     df = df[[col for col in list(df.columns) if "Unnamed" not in col]]
