@@ -23,7 +23,7 @@ const DataTuple = (props) => {
     const otherColumns = headers.map((header) => ({
       field: header,
       headerName: header,
-      width: 200,
+      width: 150,
     }));
     const columns = [idColumn, ...otherColumns];
     return columns;

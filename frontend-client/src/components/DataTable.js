@@ -3,6 +3,7 @@ import {
   Button,
   ButtonGroup,
   Box,
+  Tooltip,
   Checkbox,
   FormControlLabel,
 } from "@mui/material";
@@ -25,14 +26,13 @@ const CustomToolbar = (props) => {
         disableElevation
         variant="text"
         size="large"
-        sx={{ my: 0.8, height: 50 }}
+        sx={{ my: "0.2rem", height: "3rem" }}
       >
         <GridToolbarExport sx={{ fontSize: "1rem" }} />
         {props.result.data.length !== 0 && (
           <Button
             startIcon={<KeyboardDoubleArrowDownIcon />}
             onClick={props.onApplyRepairs}
-            sx={{ fontSize: "1rem" }}
           >
             Apply Repairs
           </Button>
@@ -47,15 +47,17 @@ const ResultCell = ({ params, props }) => {
     <Box>
       {params.value !== "" && params.value !== "UNKOWN" ? (
         <Box>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={props.result.marked.has(params.id)}
-                onChange={(e) => props.onMarkResult(params.id)}
-              />
-            }
-            label={params.value}
-          />
+          <Tooltip title={params.value}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={props.result.marked.has(params.id)}
+                  onChange={(e) => props.onMarkResult(params.id)}
+                />
+              }
+              label={params.value}
+            />
+          </Tooltip>
           {props.isDataLakeUploaded && (
             <Button
               startIcon={<InfoIcon />}
@@ -94,7 +96,7 @@ const DataTable = (props) => {
             header === props.result.column
               ? `${props.dirtyColumn} repairs`
               : header,
-          width: 200,
+          width: 150,
           editable: true,
           headerClassName:
             header === props.result.column
@@ -111,6 +113,7 @@ const DataTable = (props) => {
             ...column,
             ...(header === props.result.column
               ? {
+                  cellClassName: "result--cell",
                   renderCell: (params) => <ResultCell {...{ params, props }} />,
                 }
               : {}),
@@ -162,12 +165,7 @@ const DataTable = (props) => {
       slots={{
         toolbar: () => CustomToolbar(props),
         noRowsOverlay: () => {
-          return (
-            // <Stack height="100%" alignItems="center" justifyContent="center">
-            //   No rows in DataGrid
-            // </Stack>
-            <DragDropFile onChange={props.onChangeDirtyDataFile} />
-          );
+          return <DragDropFile onChange={props.onChangeDirtyDataFile} />;
         },
       }}
       sx={{

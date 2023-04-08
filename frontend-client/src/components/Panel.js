@@ -1,6 +1,13 @@
 import React from "react";
 import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
-import { Box, Paper, Divider, TextField, Button } from "@mui/material";
+import {
+  Box,
+  Paper,
+  Divider,
+  TextField,
+  Button,
+  CircularProgress,
+} from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 
 import FileInput from "./FileUpload";
@@ -10,9 +17,8 @@ import MultipleSelectCheckmarks from "./MultiSelct";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: "#EDEDED",
-  elevation: 0,
-  paddingTop: theme.spacing(2),
-  paddingLeft: theme.spacing(1),
+  paddingTop: theme.spacing("1rem"),
+  paddingLeft: theme.spacing("0.5rem"),
   fontFamily: "League Spartan",
   fontSize: "1.2rem",
   textAlign: "left",
@@ -34,7 +40,7 @@ const theme = createTheme({
 const Panel = (props) => {
   return (
     <Box sx={{ bgcolor: "#EDEDED" }}>
-      <Grid container rowSpacing={3.5} columnSpacing={1} sx={{ m: 0.1 }}>
+      <Grid container rowSpacing={"0.5rem"} columnSpacing={1} sx={{ m: 0.1 }}>
         <Grid xs={4}>
           <Item elevation={0}>Data</Item>
         </Grid>
@@ -85,7 +91,7 @@ const Panel = (props) => {
           <Divider
             textAlign="left"
             sx={{
-              m: 2,
+              m: 1,
               fontFamily: "League Spartan",
               fontSize: "1.2rem",
               "&::before, &::after": {
@@ -172,7 +178,7 @@ const Panel = (props) => {
             onChange={(e) => props.onChangePrompt(e.target.value)}
             label="Prompt"
             multiline
-            rows={5}
+            rows={4}
             sx={{ backgroundColor: "white" }}
           />
         </Grid>
@@ -185,9 +191,9 @@ const Panel = (props) => {
               variant="contained"
               color="green"
               onClick={props.onRunJob}
-              sx={{ mb: 1, width: 120, height: 60 }}
+              sx={{ width: "6rem", height: "3rem" }}
             >
-              Start
+              {props.load ? <CircularProgress /> : "Start"}
             </Button>
           </ThemeProvider>
         </Grid>

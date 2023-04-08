@@ -9,7 +9,7 @@ const Header = (props) => {
         color: "black",
         textAlign: "left",
         fontFamily: "League Spartan",
-        fontSize: "3rem",
+        fontSize: "2.7rem",
         fontWeight: "bold",
       }}
     >

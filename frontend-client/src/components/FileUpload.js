@@ -4,14 +4,14 @@ import UploadFileIcon from "@mui/icons-material/UploadFile";
 
 const FileInput = (props) => {
   return (
-    <Stack direction="row" justifyContent="left" mt={0.5}>
+    <Stack direction="row" justifyContent="left">
       <Button
         startIcon={<UploadFileIcon />}
         disabled={props.disabled}
         disableElevation
         variant="contained"
         component="label"
-        sx={{ px: 2.5 }}
+        sx={{ px: "1.5rem" }}
       >
         Browse
         {props.type === "datalake" ? (

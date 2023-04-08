@@ -48,6 +48,7 @@ export const MainPage = () => {
     column: "RetClean Results",
     data: [],
     marked: new Set(),
+    load: false,
     sourceTuple: null,
     sourceTableName: null,
     sourceRowNumber: null,
@@ -55,6 +56,8 @@ export const MainPage = () => {
 
   // METHODS
   const onRunJob = async () => {
+    setResult({ ...result, load: true });
+
     const isDirtyDataUploaded =
       dataLake.content.length !== 0 || dataLake.indexName.length !== 0;
 
@@ -89,8 +92,8 @@ export const MainPage = () => {
       finetuning_set: fineTune.content,
     };
 
-    // const repairs = await getRepairs("retrieval_based", {});
-    const repairs = await getRepairs2(requestObj);
+    const repairs = await getRepairs("retrieval_based", {});
+    // const repairs = await getRepairs2(requestObj);
 
     let marked = new Set();
     let content = [...dirtyData.content];
@@ -112,6 +115,7 @@ export const MainPage = () => {
       ...result,
       data: repairs,
       marked: marked,
+      load: false,
       sourceTuple: null,
       sourceTableName: null,
       sourceRowNumber: null,
@@ -154,7 +158,6 @@ export const MainPage = () => {
   const onChangeDataLakeFile = async (fileList) => {
     let fileName = fileList[0].webkitRelativePath.split("/")[0];
     let content = [...fileList];
-    console.log(content);
 
     setDataLake({
       ...dataLake,
@@ -306,7 +309,10 @@ export const MainPage = () => {
   };
 
   return (
-    <Box id="outer" sx={{ display: "flex", mx: 4, flexDirection: "column" }}>
+    <Box
+      id="outer"
+      sx={{ display: "flex", mx: "1rem", flexDirection: "column" }}
+    >
       <Box id="header" sx={{ flex: 1 }}>
         <Header text="RetClean" />
       </Box>
@@ -330,9 +336,9 @@ export const MainPage = () => {
         >
           <Panel
             dirtyDataFileName={dirtyData.fileName}
-            isDirtyDataUploaded={dataLake.content !== null}
             columns={dirtyData.columns}
             onChangeDirtyDataFile={onChangeDirtyDataFile}
+            isDirtyDataUploaded={dirtyData.content !== null}
             entityName={configuration.entityName}
             onChangeEntityName={onChangeEntityName}
             dirtyColumn={configuration.dirtyColumn}
@@ -340,12 +346,12 @@ export const MainPage = () => {
             pivotColumns={configuration.pivotColumns}
             onSelectPivotColumns={onSelectPivotColumns}
             dataLakeFileName={dataLake.fileName}
-            indexName={dataLake.indexName}
-            onChangeIndexName={onChangeIndexName}
             isDataLakeUploaded={
               dataLake.content.length !== 0 || dataLake.indexName.length !== 0
             }
             onChangeDataLakeFile={onChangeDataLakeFile}
+            indexName={dataLake.indexName}
+            onChangeIndexName={onChangeIndexName}
             indexState={configuration.indexState}
             rerankState={configuration.rerankState}
             reasonState={configuration.reasonState}
@@ -354,13 +360,14 @@ export const MainPage = () => {
             onChangeFineTuneFile={onChangeFineTuneFile}
             prompt={configuration.prompt}
             onChangePrompt={onChangePrompt}
+            load={result.load}
             onRunJob={onRunJob}
           />
         </Box>
         <Box
           id="right"
           sx={{
-            flex: 3,
+            flex: 2.5,
             display: "flex",
             flexDirection: "column",
             overflow: "auto",
@@ -374,13 +381,13 @@ export const MainPage = () => {
           >
             <DataTable
               dirtyDataContent={dirtyData.content}
-              isDirtyDataUploaded={dirtyData.content !== null}
               columns={
                 result.data.length === 0
                   ? dirtyData.columns
                   : [...dirtyData.columns, result.column]
               }
               onChangeDirtyDataFile={onChangeDirtyDataFile}
+              isDirtyDataUploaded={dirtyData.content !== null}
               dirtyColumn={configuration.dirtyColumn}
               pivotColumns={configuration.pivotColumns}
               isDataLakeUploaded={
