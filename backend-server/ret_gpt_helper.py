@@ -1,12 +1,16 @@
 import torch
 import openai
 import time
+from dotenv import load_dotenv
+import os
 from transformers import AutoModelForQuestionAnswering, AutoTokenizer, pipeline
 from utils import *
 from retrieval_helper import * 
 from reranker_helper import *
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
+
+load_dotenv()
 
 # Load Post Processing Models
 roberta_qa_model = AutoModelForQuestionAnswering.from_pretrained("shamz15531/roberta_repair_extractor")
@@ -62,9 +66,9 @@ def answer_extraction_from_response(response_list, impute_col, qa_model = robert
 def send_gpt_prompts_with_ret(all_query_tuples_serialized, the_encoder, the_tokenizer, missing_att,
                               reranker_type = None, index_name = "es_index_1", index_type = "ES", object_imp = "object"):
     ### GPT3.5 Params
-    service_name = "dataprepopenai2"
-    deployment_name = "retclean_gpt35"#"retclean_gpt35"
-    key = "5b8e613900314c6e95839d5509fbea80"  # please replace this with your key as a string
+    service_name = os.getenv("SERVICE_NAME")
+    deployment_name = os.getenv("DEPLOYMENT_NAME")
+    key = os.getenv("API_KEY")  # please replace this with your key as a string or in .env file
 
     openai.api_key = key
     openai.api_base =  "https://{}.openai.azure.com/".format(service_name) # your endpoint should look like the following https://YOUR_RESOURCE_NAME.openai.azure.com/
