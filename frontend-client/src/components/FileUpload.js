@@ -27,7 +27,7 @@ const FileInput = (props) => {
           <input
             hidden
             type="file"
-            accept={props.type === "data" ? ".csv" : ".json"}
+            accept={".csv"}
             onChange={(e) => props.onChange(e.target.files[0])}
           />
         )}
