@@ -97,23 +97,26 @@ export const MainPage = () => {
 
     let marked = new Set();
     let content = [...dirtyData.content];
+    let data = [];
     let j = 0;
     for (let i = 0; i < dirtyData.content.length; i++) {
       let rowObj = content[i];
       if (dirtyData.rows.has(i)) {
         const repairValue = repairs[j]["repair"];
         rowObj[result.column] = repairValue;
+        data.push(repairs[j]);
         if (repairValue !== "UNKNOWN") marked.add(i);
         j++;
       } else {
         rowObj[result.column] = "";
+        data.push(null);
       }
       content[i] = rowObj;
     }
 
     setResult({
       ...result,
-      data: repairs,
+      data: data,
       marked: marked,
       load: false,
       sourceTuple: null,
