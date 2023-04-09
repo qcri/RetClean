@@ -15,6 +15,7 @@ elasticsearch = "*"
 datasets = "*"
 tqdm = "*"
 faiss-cpu = "*"
+python-dotenv = "*"
 
 [dev-packages]
 
