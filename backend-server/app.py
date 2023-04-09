@@ -194,6 +194,7 @@ def repair_table():
             "index" : ""
                     } for i in range(size_of_repairs)] 
         
+        ret_val = from_string_to_dict(ret_val)
         print("OBJECT RETURNED TO FRONT END:")
         print(ret_results)
         return ret_results
@@ -217,6 +218,7 @@ def repair_table():
                                          reranker_type = params["reranker_type"], index_name = params["index_name"],
                                            index_type = params["index_type"], object_imp = params["entity_described"])
         
+        ret_val = from_string_to_dict(ret_val)
         print("OBJECT RETURNED TO FRONT END:")
         print(ret_val)
         return ret_val
@@ -298,6 +300,7 @@ def repair_table():
                                                         reasoner_model = the_extractor
                                                         )
                                                 )
+        all_extracted_value_objects = from_string_to_dict(all_extracted_value_objects)
         print("OBJECT RETURNED TO FRONT END:")
         print(all_extracted_value_objects)
         return all_extracted_value_objects

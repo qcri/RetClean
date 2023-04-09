@@ -60,7 +60,11 @@ def write_datalake_files(files_dict, index_name): # index_name is the folder nam
         
         for fname, data in files_dict.items():
             if fname != "finetuning_set":
-                pd.read_csv(data).to_csv("./datalakes/{}/{}.csv".format(index_name,fname.replace(".csv","")), index=False)
+                try:
+                    df_temp = pd.read_csv(data)
+                except:
+                    df_temp = pd.read_csv(data, encoding='ISO-8859-1')
+                df_temp.to_csv("./datalakes/{}/{}.csv".format(index_name,fname.replace(".csv","")), index=False)
 
         return "./datalakes/{}".format(index_name), "create_index"
 
@@ -111,3 +115,12 @@ def save_json(path, x):
     with open(path,"w") as f1:
         ret = json.dump(x,f1)
     return True
+
+# Transform serilizations to dictionaries
+def from_string_to_dict(results):
+    for result in results:
+        if result["source"] == "": 
+            result["source"]=None
+        else:
+            result["source"] = {x[0]: x[1] for x in [elem.split(' : ') for elem in  result["source"].strip('[ ]').split(' ; ')]}
+    return results
