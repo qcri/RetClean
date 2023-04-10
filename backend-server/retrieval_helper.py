@@ -12,7 +12,6 @@ def load_index(serialized_data_path, index_dir, index_name, index_type):
     serialized_data = load_dataset('csv', data_files=serialized_data_path)
     if index_type == 'FAISS':
         faiss_index_path = os.path.join(index_dir, index_name)
-        print(os.path.join(index_dir, index_name))
         serialized_data['train'].load_faiss_index('embeddings', faiss_index_path)
     elif index_type == 'ES':
         es_client = Elasticsearch([{'host': 'localhost', 'port': 9200, 'scheme': 'http'}])
@@ -46,8 +45,6 @@ def search_index(query_tuple, # str format, serialized
     retrieved_examples = False
     
     dataset = load_index(serialized_data_path, index_dir, index_name, index_type)
-    # print(type(dataset))
-    # print(dataset)
     dataset = dataset["train"]
     if index_type == 'FAISS':
         search_query_embedding = encoder(**tokenizer(query_tuple, return_tensors='pt').to(device))[0][0].detach().cpu().numpy() 

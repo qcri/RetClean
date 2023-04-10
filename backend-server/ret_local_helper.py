@@ -39,7 +39,6 @@ def matching(all_retrieved, # format = return by search_index()
 
     # Create Pipeline if None
     if matching_pipeline == None or model_directory!='shamz15531/roberta_tuple_matcher_base':
-        print("LOADED: ", model_directory)
         matching_pipeline = pipeline('text-classification', model=model_directory)
 
     if len(all_retrieved) != len(all_query_tuples):
@@ -68,10 +67,8 @@ def matching(all_retrieved, # format = return by search_index()
 
         # Do Matching
         for i in range(len(pairs)):
-            # print(pairs[i])
             if matched_1 == False: # Stop once 1 match is found
                 pred = matching_pipeline(pairs[i])
-                # print(pred)
                 if pred[0]["label"] == "LABEL_1":
                     ret_matched["serialization"] = retrieved["serialization"][i]
                     ret_matched["table"] = retrieved["table"][i]
@@ -107,7 +104,6 @@ def generate(context, impute_attribute, engine, max_tokens):
 # Helper function for extraction
 def scan(impute_att, context, model):
     att_val_pairs = [x.strip().split(' : ') for x in context[2:-2].split(' ; ')]
-    # att_val_pairs = [y for y in att_val_pairs if y[0] != impute_att]
     if att_val_pairs == [['']] or context == "":
         return ""
     
@@ -129,13 +125,6 @@ def scan(impute_att, context, model):
         })
 
     pairs = sorted(pairs, key=lambda x: x['score'], reverse=True)
-    # print("\n\n")
-    # print("impute_att", impute_att)
-    # print("context", context)
-    # print("att_val_pairs", att_val_pairs)
-    # print("pairs", pairs)
-    # print("VALUE", pairs[0]['value'])
-    # print("\n\n", "_"*120)
     return pairs[0]['value'] 
 
 # Extraction Function
@@ -159,19 +148,12 @@ def extraction(list_ret_tuples,
         list_ret_tuples['index'] = list_ret_tuples['index'][:limit]
         
     results = []
-    # print("list_ret_tuples", type(list_ret_tuples), list_ret_tuples)
-    # for i in range(len(list_ret_tuples['serialization'])):
+
     context_tuple = list_ret_tuples['serialization']
     context_table = list_ret_tuples['table']
     context_index = list_ret_tuples['index']
-    
-    # print("context_tuple", type(context_tuple), context_tuple)
-    # print("context_table", type(context_table), context_table)
-    # print("context_index", type(context_index), context_index)
 
     if mode == 'ST':
-        # print("BEFORE SCAN")
-        # print(impute_attribute, context_tuple)
         val = scan(impute_attribute, context_tuple, loaded_reasoner)
     elif mode == 'GPT':
         val = generate(impute_attribute, context_tuple, loaded_reasoner)
@@ -186,9 +168,6 @@ def extraction(list_ret_tuples,
 
     return results
   
-###
-# returns 2D list of values and citation. format: [[value <str> , parent_table_name <str> , parent_table_index <str>]]
-###
 
 print("LOADED ret_local_helper")
             
