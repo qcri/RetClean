@@ -275,14 +275,14 @@ def repair_table():
                     retrieved_set_l = cross_encoder_based_rerank(query_t, retrieved_set_l, reranker_model)
 
                 all_retrieved_sets.append(retrieved_set_l)
-
-        # print("all_retrieved_sets", all_retrieved_sets)
+        print("matcher_directory", matcher_directory)
+        print("all_retrieved_sets", all_retrieved_sets)
 
         matched_retrieved_sets = matching(all_retrieved_sets, # format = return by search_index()
                  query_tuples, # str serialized,
                  model_directory = matcher_directory
                 )
-        # print("matched_retrieved_sets", matched_retrieved_sets)
+        print("matched_retrieved_sets", matched_retrieved_sets)
         # Loop over query tuples again to extract value
         if len(query_tuples) != len(matched_retrieved_sets):
             raise ValueError("Number of matched retrieved sets does not equal the number of query tuples")
@@ -294,12 +294,14 @@ def repair_table():
         all_extracted_value_objects = []
         for j in range(len(matched_retrieved_sets)):
             print("matched_retrieved_sets[j]", matched_retrieved_sets[j])
-            all_extracted_value_objects.append(extraction(matched_retrieved_sets[j],
+            value_t = extraction(matched_retrieved_sets[j],
                                                         params["dirty_column"], # <str> impute attribute name
                                                         mode = "ST", # ST for 'SentenceTransformers' or GPT for GPT3/3.5
                                                         reasoner_model = the_extractor
                                                         )
-                                                )
+            print("value_t[0]",type(value_t[0]),value_t[0])
+            all_extracted_value_objects.append(value_t[0])
+                                                
         all_extracted_value_objects = from_string_to_dict(all_extracted_value_objects)
         print("OBJECT RETURNED TO FRONT END:")
         print(all_extracted_value_objects)

@@ -38,7 +38,8 @@ def matching(all_retrieved, # format = return by search_index()
     
 
     # Create Pipeline if None
-    if matching_pipeline == None:
+    if matching_pipeline == None or model_directory!='shamz15531/roberta_tuple_matcher_base':
+        print("LOADED: ", model_directory)
         matching_pipeline = pipeline('text-classification', model=model_directory)
 
     if len(all_retrieved) != len(all_query_tuples):
