@@ -1,14 +1,14 @@
 import * as d3 from "d3";
 
-export async function getRepairs(type, payload) {
+export async function getRepairsMock(type, payload) {
   const uri = `http://localhost:4000/${type}`;
   return fetch(uri, {
     method: "GET",
   }).then((response) => response.json());
 }
 
-export async function getRepairs2(data) {
-  const uri = `http://localhost:5000/repair_table`;
+export async function getRepairs(data) {
+  const uri = `http://localhost:9690/repair_table`;
   let formData = new FormData();
   formData.append("json_data", JSON.stringify(data["json_data"]));
   formData.append("entity_described", data["entity_described"]);
