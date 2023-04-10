@@ -17,3 +17,13 @@ npm start
 ```
 
 Then view the client at url: [http://localhost:3000/](http://localhost:3000/)
+
+
+## Potential Erros and Fixes:  
+1. Ensure elasticsearch server is up and running.     
+2. Ensure port running is correct (varies between 5000 & 9690) [backend runs on 9690, frontend sends to 5000].  
+3. Formatting of finetuning_set is correct if given.     
+
+
+## To Add:  
+1. Return "No Value Found" instead of empty string.  
