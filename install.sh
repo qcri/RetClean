@@ -1,6 +1,5 @@
 cd backend-server ;
-pipenv run python app.py; 
-& 
+pipenv install ;
 cd .. ;
 cd frontend-client ;
-npm start ;
+npm install ;

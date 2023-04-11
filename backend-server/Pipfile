@@ -16,6 +16,7 @@ datasets = "*"
 tqdm = "*"
 faiss-cpu = "*"
 python-dotenv = "*"
+cd = "*"
 
 [dev-packages]
 
