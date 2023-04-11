@@ -1,6 +1,6 @@
 # RetClean
 
-This is the official repository for the RetClean data repair project under the QCRI organization. RetClean is a tool that leverages language models for data cleaning operations, such as missing value imputation imputation. The paper detailing the project can be found on arxiv at this [link](https://arxiv.org/abs/2303.16909)
+This is the official repository for the RetClean data repair project under the QCRI organization. RetClean is a tool that leverages language models for data cleaning operations, such as missing value imputation imputation. The paper detailing the project can be found on arxiv at this [link](https://arxiv.org/abs/2303.16909).
 
 ## Installation and Use
 
