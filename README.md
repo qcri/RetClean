@@ -27,7 +27,7 @@ RetClean also requires an elasticsearch instance to be running locally. Follow t
   ```
   tar -xvzf elasticsearch-7.17.6-darwin-x86_64.tar.gz
   ```
-  3). Go into directory where ES is unzipped ```cd elasticsearch-7.17.6```and run command:```./bin/elasticsearch``` on the terminal. This will start an ES server on the localhost on port 9200 (default port). RetClean expects the ES server to be on port 9200.   
+  3). Go into directory where ES is unzipped using ```cd elasticsearch-7.17.6```and run command:```./bin/elasticsearch``` on the terminal. This will start an ES server on the localhost on port 9200 (default port). RetClean expects the ES server to be on port 9200.   
 
 
 
