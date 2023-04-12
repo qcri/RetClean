@@ -10,8 +10,14 @@ You must have node, npm, python, and pipenv installed on your machine. After dow
 ```
 ./install.sh
 ```
+In the *backend-server* directory create a file named ".env" which should have the following format:
+```
+API_KEY="<your_azure_openai_key>"
+SERVICE_NAME="<your_azure_resource_name>"
+DEPLOYMENT_NAME="<model_deployment_name>"
+```
 
-After all the necessary modules are downloaded, launch the local application with -
+After all the necessary modules are downloaded and the .env file is created, launch the local application with -
 
 ```
 ./start.sh
