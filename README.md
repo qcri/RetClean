@@ -35,14 +35,8 @@ RetClean also requires an elasticsearch instance to be running locally. Follow t
   ```
   3). Go into directory where ES is unzipped using ```cd elasticsearch-7.17.6```and run command:```./bin/elasticsearch``` on the terminal. This will start an ES server on the localhost on port 9200 (default port). RetClean expects the ES server to be on port 9200.   
 
+## Recommendation:
+
+When using retrieval module, the indexing of the datalake may take time. However, if you wish to repair multiple tables using the same datalake or simple use a datalake that has been already indexed before, give an index name value and the datalake for the first time. After that, the created index can be accessed and used by simply giving that index name (and no datalake). (Note: if you provide an existing index name and a datalake again, the indexing will occur and the old index with that name will be overwritten). 
 
 
-## Potential Errors and Fixes:
-
-1. Ensure elasticsearch server is up and running.
-2. Formatting of finetuning_set is correct if given.
-3. Ensure .env file exists in correct format.
-
-## To Add:
-
-1. Return "No Value Found" instead of empty string.
