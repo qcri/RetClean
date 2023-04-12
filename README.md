@@ -4,6 +4,7 @@ This is the official repository for the RetClean data repair project under the Q
 
 ## Installation and Use
 
+### RetClean Setup:
 You must have node, npm, python, and pipenv installed on your machine. After downloading the repo, in the root diretory of the project run -
 
 ```
@@ -17,6 +18,18 @@ After all the necessary modules are downloaded, launch the local application wit
 ```
 
 The server will run on port 9690 and the client will run on port 3000. View the client at url: [http://localhost:3000/](http://localhost:3000/)
+
+### ElasticSearch setup:
+RetClean also requires an elasticsearch instance to be running locally. Follow these steps:
+
+  1). Download [ElasticSearch 7.17.6](https://www.elastic.co/guide/en/elasticsearch/reference/7.17/install-elasticsearch.html)   
+  2). Unzip the tar file into chosen directory by double clicking or using the following command on the temrinal:
+  ```
+  tar -xvzf elasticsearch-7.17.6-darwin-x86_64.tar.gz
+  ```
+  3). Go into directory where ES is unzipped and run command: $./bin/elasticsearch on the terminal. This will start an ES server on the localhost on port 9200 (default port). RetClean expects the ES server to be on port 9200.   
+
+
 
 ## Potential Errors and Fixes:
 
