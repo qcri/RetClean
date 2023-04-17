@@ -37,6 +37,6 @@ RetClean also requires an elasticsearch instance to be running locally. Follow t
 
 ## Recommendation:
 
-When using retrieval module, the indexing of the datalake may take time. However, if you wish to repair multiple tables using the same datalake or simple use a datalake that has been already indexed before, give an index name value and the datalake for the first time. After that, the created index can be accessed and used by simply giving that index name (and no datalake). (Note: if you provide an existing index name and a datalake again, the indexing will occur and the old index with that name will be overwritten). 
+When using retrieval module, the indexing of the datalake may take time. However, if you wish to repair multiple tables using the same datalake or simply use a datalake that was previously indexed, input an index name alongside the datalake. After that, the created index can be accessed and used by providing that index name (and no datalake). (Note: if you provide an existing index name and a datalake again, this datalake will be indexed with the provided name, overwriting the previously saved index with the same name). 
 
 
