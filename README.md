@@ -29,14 +29,14 @@ The server will run on port 9690 and the client will run on port 3000. View the 
 RetClean also requires an elasticsearch instance to be running locally. Follow these steps:
 
   1). Download [ElasticSearch 7.17.6](https://www.elastic.co/guide/en/elasticsearch/reference/7.17/install-elasticsearch.html)   
-  2). Unzip the tar file into chosen directory by double clicking or using the following command on the temrinal:
+  2). Unzip the tar file into a chosen directory by double clicking or using the following command on the temrinal:
   ```
   tar -xvzf elasticsearch-7.17.6-darwin-x86_64.tar.gz
   ```
-  3). Go into directory where ES is unzipped using ```cd elasticsearch-7.17.6```and run command:```./bin/elasticsearch``` on the terminal. This will start an ES server on the localhost on port 9200 (default port). RetClean expects the ES server to be on port 9200.   
+  3). Go into the directory where ES is unzipped using ```cd elasticsearch-7.17.6```and run command:```./bin/elasticsearch``` on the terminal. This will start an ES server on the localhost on port 9200 (default port). RetClean expects the ES server to be on port 9200.   
 
 ## Recommendation:
 
-When using retrieval module, the indexing of the datalake may take time. However, if you wish to repair multiple tables using the same datalake or simply use a datalake that was previously indexed, input an index name alongside the datalake. After that, the created index can be accessed and used by providing that index name (and no datalake). (Note: if you provide an existing index name and a datalake again, this datalake will be indexed with the provided name, overwriting the previously saved index with the same name). 
+When using the retrieval module, the indexing of the datalake may take time. However, if you wish to repair multiple tables using the same datalake or simply use a datalake that was previously indexed, input an index name alongside the datalake. After that, the created index can be accessed and used by providing that index name (and no datalake). (Note: if you provide an existing index name and a datalake again, this datalake will be indexed with the provided name, overwriting the previously saved index with the same name). 
 
 
