@@ -45,9 +45,9 @@ async def search_data(
             )
             search_results.extend(qdrant_results)
 
-        if index_type in ["lexicographic", "both"]:
+        if index_type in ["syntactic", "both"]:
             search_query = search_preprocess(
-                "lexicographic", pivot_names, pvt_row, target_name, tgt
+                "syntactic", pivot_names, pvt_row, target_name, tgt
             )
             es_results = es_client.search(
                 index=index_name,

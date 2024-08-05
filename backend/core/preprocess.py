@@ -12,7 +12,7 @@ def search_preprocess(
             search_query[p] = v
         search_query[target_name] = ""
         search = str(search_query)
-    elif index_type == "lexicographic":
+    elif index_type == "syntactic":
         search_query = {}
         for p, v in zip(pivot_names, pivot_row_values):
             search_query[p] = v

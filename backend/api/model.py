@@ -13,5 +13,5 @@ async def get_models_endpoint():
             cloud["options"].append(name)
         else:
             local["options"].append(name)
-    models = {"cloud": cloud, "local": local}
+    models = [cloud, local]
     return {"status": "success", "models": models}
