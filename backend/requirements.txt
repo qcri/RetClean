@@ -1,0 +1,7 @@
+fastapi
+pydantic
+uvicorn
+pandas
+sentence-transformers
+elasticsearch
+qdrant-client
