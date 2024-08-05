@@ -6,7 +6,7 @@ from elasticsearch import helpers
 from core import es_client, qdrant_client, sentence_model
 
 
-async def get_indices() -> dict:
+async def get_indexes() -> dict:
     index_names = []
     try:
         es_indices_response = es_client.cat.indices(format="json")
