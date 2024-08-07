@@ -1,6 +1,7 @@
 fastapi
 pydantic
 uvicorn
+python-multipart
 pandas
 sentence-transformers
 elasticsearch

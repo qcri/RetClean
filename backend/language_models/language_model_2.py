@@ -5,9 +5,6 @@ class LanguageModel2(LanguageModel):
 
     def __init__(self):
         super().__init__(type="cloud")
-
-    def initialize_model(self):
-        # Placeholder for model initialization
         self.model = "language_model_2"
 
     def prompt_wrapper(self, text: str) -> str:

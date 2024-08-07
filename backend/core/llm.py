@@ -1,53 +1,63 @@
-from typing import List, Optional
+from typing import Optional
 from core import initialized_models
 from core.preprocess import prompt_preprocess
 
 
 async def prompt_with_data(
     model_name: str,
-    pivot_names: List[str],
-    pivot_values: List[list],
+    description: Optional[str],
     target_name: str,
-    target_values: List[str],
-    contexts: Optional[List] = None,
-) -> List[str]:
+    target_values: list[str],
+    pivot_names: list[str],
+    pivot_values: list[list],
+    retrieved_list: list[list],
+) -> dict:
+
+    if model not in initialized_models:
+        return {"status": "fail", "message": "model not found"}
 
     model = initialized_models[model_name]
 
-    if contexts is None:
-        contexts_list = [None for _ in range(len(contexts))]
-    else:
-        contexts_list = context
+    if retrieved_list == []:
+        retrieved_list = [None for _ in range(len(target_values))]
 
     results = []
-    for pvt_row, tgt in zip(pivot_values, target_values):
-        generative_results = []
-        for context in contexts_list:
-            prompt = prompt_preprocess(pivot_names, pvt_row, target_name, tgt, context)
+    for target_row_value, pivot_row_values, retrieved in zip(
+        target_values, pivot_values, retrieved_list
+    ):
+        prompt = prompt_preprocess(
+            description,
+            target_name,
+            target_row_value,
+            pivot_names,
+            pivot_row_values,
+            retrieved,
+        )
+
+        try:
             wrapped_text = model.prompt_wrapper(prompt)
-            try:
-                response = model.generate(wrapped_text)
-            except Exception as e:
-                return {"status": "fail", "message": str(e)}
+            response = model.generate(wrapped_text)
+        except Exception as e:
+            return {"status": "fail", "message": str(e)}
 
-            generative_results.append(response)
+        results.append(response)
 
-        results.append(generative_results)
-
-    return {
-        "status": "success",
-        "message": "Generations successful",
-        "results": results,
-    }
+    return {"status": "success", "results": results}
 
 
-def get_models() -> List[dict]:
+def get_models() -> dict:
+    cloud = {"name": "Cloud Models", "options": []}
+    local = {"name": "Local Models", "options": []}
+
     try:
-        model_list = [
-            {"model_name": name, "model_type": model.type}
-            for name, model in initialized_models.items()
-        ]
+        for name, model in initialized_models.items():
+            if model.type == "cloud":
+                cloud["options"].append(name)
+            else:
+                local["options"].append(name)
+        model_names = [cloud, local]
+
     except Exception as e:
         return {"status": "fail", "message": str(e)}
 
-    return {"status": "success", "results": model_list}
+    return {"status": "success", "models": model_names}
