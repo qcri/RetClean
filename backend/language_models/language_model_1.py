@@ -5,9 +5,6 @@ class LanguageModel1(LanguageModel):
 
     def __init__(self):
         super().__init__(type="local")
-
-    def initialize_model(self):
-        # Placeholder for model initialization
         self.model = "language_model_1"
 
     def prompt_wrapper(self, text: str) -> str:

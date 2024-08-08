@@ -1,4 +1,3 @@
-from typing import List
 from core import es_client, qdrant_client, sentence_model
 from core.preprocess import search_preprocess
 
@@ -11,12 +10,12 @@ RERANK_MULTIPLE_TOP_K = 15
 async def search_data(
     index_name: str,
     index_type: str,
-    pivot_names: List[str],
-    pivot_values: List[list],
     target_name: str,
-    target_values: List[str],
+    target_values: list[str],
+    pivot_names: list[str],
+    pivot_values: list[list],
     will_rerank: bool = False,
-) -> List[List[dict]]:
+) -> dict:
 
     if not (
         es_client.indices.exists(index=index_name)
@@ -32,30 +31,37 @@ async def search_data(
     results = []
     for pvt_row, tgt in zip(pivot_values, target_values):
         search_results = []
+        try:
+            if index_type in ["semantic", "both"]:
+                search_query = search_preprocess(
+                    "semantic", pivot_names, pvt_row, target_name, tgt
+                )
+                search_query_embedding = sentence_model.encode(search_query).tolist()
+                qdrant_results = qdrant_client.search(
+                    collection_name=index_name,
+                    query_vector=search_query_embedding,
+                    limit=k,
+                )
+                search_results.extend(qdrant_results)
 
-        if index_type in ["semantic", "both"]:
-            search_query = search_preprocess(
-                "semantic", pivot_names, pvt_row, target_name, tgt
-            )
-            search_query_embedding = sentence_model.encode(search_query).tolist()
-            qdrant_results = qdrant_client.search(
-                collection_name=index_name,
-                query_vector=search_query_embedding,
-                limit=k,
-            )
-            search_results.extend(qdrant_results)
+            if index_type in ["syntactic", "both"]:
+                search_query = search_preprocess(
+                    "syntactic", pivot_names, pvt_row, target_name, tgt
+                )
+                search_query_body = {
+                    "_source": ["source", "table", "row"],
+                    "query": {"match": {"source": search_query, "fuzziness": "AUTO"}},
+                }
+                es_results = es_client.search(
+                    index=index_name,
+                    body=search_query_body,
+                    size=k,
+                )
+                search_results.extend(es_results["hits"]["hits"])
 
-        if index_type in ["lexicographic", "both"]:
-            search_query = search_preprocess(
-                "lexicographic", pivot_names, pvt_row, target_name, tgt
-            )
-            es_results = es_client.search(
-                index=index_name,
-                body={"query": {"match": {"content": search_query}}},
-                size=k,
-            )
-            search_results.extend(es_results["hits"]["hits"])
+        except Exception as e:
+            return {"status": "fail", "message": str(e)}
 
         results.append(search_results)
 
-    return results
+    return {"status": "success", "results": results}

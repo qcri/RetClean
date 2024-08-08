@@ -12,6 +12,17 @@ __pycache__/
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints
 
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# production
+/build
+
 # System files
 .DS_Store
 Thumbs.db

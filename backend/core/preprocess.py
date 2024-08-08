@@ -1,10 +1,5 @@
-# TODO
-# If target_row_value is present,
-# we want to add additional error detection
-
-
 def search_preprocess(
-    index_type, pivot_names, pivot_row_values, target_name, target_row_value
+    index_type, target_name, target_row_value, pivot_names, pivot_row_values
 ):
     if index_type == "semantic":
         search_query = {}
@@ -12,7 +7,7 @@ def search_preprocess(
             search_query[p] = v
         search_query[target_name] = ""
         search = str(search_query)
-    elif index_type == "lexicographic":
+    elif index_type == "syntactic":
         search_query = {}
         for p, v in zip(pivot_names, pivot_row_values):
             search_query[p] = v
@@ -22,21 +17,24 @@ def search_preprocess(
 
 
 def prompt_preprocess(
-    pivot_names, pivot_row_values, target_name, target_row_value, context
+    description, target_name, target_row_value, pivot_names, pivot_row_values, context
 ):
-    search_query = {}
-    for p, v in zip(pivot_names, pivot_row_values):
-        search_query[p] = v
+    search_str = str({p: v for p, v in zip(pivot_names, pivot_row_values)})
+    base_query = f"Provide the concise value of {target_name} for the row {search_str}."
 
-    # IF target_row_value is present,
-    # we want to add additional error detection
-
-    base_query = str(search_query)
-    if context is not None:
-        prompt = f"Given the following {context}, provide the concise value of {target_name} for base query: {base_query}"
-    else:
-        prompt = (
-            f"Provide the concise value of {target_name} for base query: {base_query}"
+    if context:
+        context_str = ", ".join(
+            [
+                f"{obj['source']}, table: {obj['table']}, row: {obj['row']}"
+                for obj in context
+            ]
         )
+        context_info = f"You're given the following context: {context_str}. "
+    else:
+        context_info = ""
+
+    description_info = f"{description}. " if description else ""
+
+    prompt = f"{description_info}{context_info}{base_query}"
 
     return prompt

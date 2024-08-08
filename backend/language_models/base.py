@@ -9,10 +9,6 @@ class LanguageModel(ABC):
         self.type = type
 
     @abstractmethod
-    def initialize_model(self):
-        pass
-
-    @abstractmethod
     def prompt_wrapper(self, text: str) -> str:
         pass
 

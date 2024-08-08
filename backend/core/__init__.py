@@ -13,5 +13,4 @@ sentence_model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
 initialized_models = {}
 for name, model_class in MODEL_MAP.items():
     model = model_class()
-    model.initialize_model()
     initialized_models[name] = model
