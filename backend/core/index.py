@@ -39,9 +39,9 @@ async def create_index(index_name: str) -> dict:
             body={
                 "mappings": {
                     "properties": {
-                        "source": {"type": "text"},
-                        "table": {"type": "text"},
-                        "row": {"type": "integer"},
+                        "values": {"type": "text"},
+                        "table_name": {"type": "text"},
+                        "row_number": {"type": "integer"},
                     }
                 },
             },
@@ -75,7 +75,7 @@ async def update_index(index_name: str, csv_files: list[UploadFile]) -> dict:
             df = pd.read_csv(csv_file.file)
             for i, row in df.iterrows():
                 row_str = row.to_json()
-                payload = {"source": row_str, "table": csv_file.filename, "row": i}
+                payload = {"values": row_str, "table_name": csv_file.filename, "row_number": i}
                 embedding = sentence_model.encode(row_str).tolist()
                 points.append(models.PointStruct(vector=embedding, payload=payload))
                 actions.append(

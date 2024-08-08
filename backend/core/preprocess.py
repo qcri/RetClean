@@ -20,21 +20,36 @@ def prompt_preprocess(
     description, target_name, target_row_value, pivot_names, pivot_row_values, context
 ):
     search_str = str({p: v for p, v in zip(pivot_names, pivot_row_values)})
-    base_query = f"Provide the concise value of {target_name} for the row {search_str}."
-
+    
+    # If context is provided, the prompt will include it and ask to use it
     if context:
-        context_str = ", ".join(
+        # Make Context String 
+        context_str = ", \n".join(
             [
-                f"{obj['source']}, table: {obj['table']}, row: {obj['row']}"
-                for obj in context
+                f"Object {i}: \nAttributes = {context[i]['values']} | Citation = {context[i]['table_name']}_{context[i]['row_number']}"
+                for i in range(len(context))
             ]
         )
-        context_info = f"You're given the following context: {context_str}. "
+
+        # Make full prompt
+        base_prompt = f'''Given the context, provide the value for the missing attribute in the Target Object. Use only the provided context information.
+        Context Objects:
+        {context_str}
+        
+        Target Object:
+        Attributes = {target_row_value}
+        Missing Attribute Name = {target_name}
+        '''
+
+    # If there is no context, the prompt asks the model to use its own information
     else:
-        context_info = ""
+        base_prompt = f'''Given the Target Object, provide the value for the missing attribute.        
+        Target Object:
+        Attributes = {target_row_value}
+        Missing Attribute Name = {target_name}
+        '''
 
-    description_info = f"{description}. " if description else ""
+    ### We are not using entity description right now. Add it later somehow in the base_prompt
+    # description_info = f"{description}. " if description else ""
 
-    prompt = f"{description_info}{context_info}{base_query}"
-
-    return prompt
+    return base_prompt

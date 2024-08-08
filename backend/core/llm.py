@@ -13,6 +13,7 @@ async def prompt_with_data(
     retrieved_list: list[list],
 ) -> dict:
 
+    # Get model from initialized models
     if model_name not in initialized_models:
         return {"status": "fail", "message": "model not found"}
     
@@ -20,11 +21,15 @@ async def prompt_with_data(
 
     if retrieved_list == []:
         retrieved_list = [None for _ in range(len(target_values))]
-
+    
+    retrieved_list = [x if x != None and len(x) > 0 else None for x in retrieved_list]
+ 
+    # Get the result for each target value
     results = []
     for target_row_value, pivot_row_values, retrieved in zip(
         target_values, pivot_values, retrieved_list
-    ):
+    ):  
+        # Create prompt using context
         prompt = prompt_preprocess(
             description,
             target_name,
@@ -35,8 +40,8 @@ async def prompt_with_data(
         )
 
         try:
-            wrapped_text = model.prompt_wrapper(prompt)
-            response = model.generate(wrapped_text)
+            wrapped_text = model.prompt_wrapper(prompt) # Creates final prompt
+            response = model.generate(wrapped_text) # Generates response, return dict with 'value' and 'citation'
         except Exception as e:
             return {"status": "fail", "message": str(e)}
 

@@ -9,7 +9,6 @@ class GPT4Repairer(LanguageModel):
     def __init__(self):
         super().__init__(type="cloud")
 
-    def initialize_model(self):
         # Load environment variables from the .env file
         load_dotenv()
         self.model = "GPT4"
@@ -24,19 +23,22 @@ class GPT4Repairer(LanguageModel):
         openai.api_type = "azure"
         openai.api_version = self.api_version
 
+    # def initialize_model(self):
+    
     def prompt_wrapper(self, text: str) -> str:
-        # Example wrapper that modifies the input text
-        return text
+        # Create the messages object for the GPT-4 model
+        messages = [
+                {"role": "system", "content": "You are a data expert. Your task is to provide the value of the missing attribute for the given object. If a context is given which contains other related objects, you must only use those to determine the missing attribute value for the target entity. If a context is not provided, you must use your own knowledge to determine the value for the missing attribute. Your response should have the following format: {'value' : <the value for the missing attribute> , 'citation' : <citation value of the object from within the context you got missing value from OR 'self' if no context is provided>. Do not return any additional text or explanation."},
+                {"role": "user", "content": text}
+            ]
+        return messages
 
     def generate(self, text: str) -> str:
         # Placeholder function for generating text using the model
         response = openai.ChatCompletion.create(
             engine="gpt4_imputer", # The deployment name you chose when you deployed the GPT-3.5-Turbo or GPT-4 model.
-            messages=[
-                {"role": "system", "content": "You are a data expert. Your role is to provide the value of the missing attribute for the given entity. If a context is given which contains other related entities, you must use those to determine the missing attribute value for the target entity. If a context is not provided, you must use your own knowledge to determine the value for the missing attribute. Please return on the value of the missing attribute as your response. Do not return any additional text or explanation. Return only the value of the missing attribute as your response."},
-                {"role": "user", "content": text}
-            ],
+            messages=text,
             stop=None,
             temperature=0.001
-            )
-        return response.choices[0]["message"]["content"]
+        )
+        return self.extract_value_citation(response.choices[0]["message"]["content"])
