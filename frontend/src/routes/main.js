@@ -8,7 +8,6 @@ import IndexModule from "./views/datalakeIndex";
 export const MainPage = (props) => {
   const [isRepairView, setIsRepairView] = useState(true);
   const onChangeView = (val) => setIsRepairView(val);
-
   return (
     <Box id="outer" display="flex" flexDirection="column" height="100vh">
       <Box id="header">
@@ -16,7 +15,7 @@ export const MainPage = (props) => {
           isRepairView={isRepairView}
           onChangeView={onChangeView}
           text={props.appname}
-          switch={props.darkmode}
+          switch={props.darkMode}
           onToggleSwitch={props.toggleDarkMode}
         />
       </Box>

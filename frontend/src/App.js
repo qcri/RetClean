@@ -20,7 +20,6 @@ const App = () => {
     localStorage.setItem("darkMode", currentMode);
     setDarkMode(currentMode);
   };
-
   return (
     <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
       <CssBaseline />

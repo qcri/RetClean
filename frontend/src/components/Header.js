@@ -42,7 +42,7 @@ const Header = (props) => {
           <FormControlLabel
             control={
               <ThemeSwitch
-                checked={props.switchTheme}
+                checked={props.switch}
                 onChange={(e) => props.onToggleSwitch(e.target.checked)}
               />
             }
