@@ -50,7 +50,11 @@ async def search_data(
                 )
                 search_query_body = {
                     "_source": ["source", "table", "row"],
-                    "query": {"match": {"source": search_query, "fuzziness": "AUTO"}},
+                    "query": {
+                        "match": {
+                            "source": {"query": search_query, "fuzziness": "AUTO"}
+                        }
+                    },
                 }
                 es_results = es_client.search(
                     index=index_name,

@@ -16,7 +16,11 @@ async def get_indexes_endpoint():
 async def create_index_endpoint(
     index_name=Form(...), csv_files: list[UploadFile] = File(...)
 ):
-    response = await create_index(index_name, csv_files)
+    response = await create_index(index_name)
+    if response["status"] == "fail":
+        raise HTTPException(status_code=400, detail=response["message"])
+
+    response = await update_index(index_name, csv_files)
     if response["status"] == "fail":
         raise HTTPException(status_code=400, detail=response["message"])
     return response

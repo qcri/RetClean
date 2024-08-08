@@ -27,7 +27,7 @@ async def get_indexes() -> dict:
     return {"status": "success", "indexes": index_names}
 
 
-async def create_index(index_name: str, csv_files: list[UploadFile]) -> dict:
+async def create_index(index_name: str) -> dict:
     if es_client.indices.exists(index=index_name) or qdrant_client.collection_exists(
         collection_name=index_name
     ):
@@ -55,30 +55,6 @@ async def create_index(index_name: str, csv_files: list[UploadFile]) -> dict:
             ),
         )
 
-        vectors = []
-        payloads = []
-        for csv_file in csv_files:
-            df = pd.read_csv(csv_file.file)
-            for i, row in df.iterrows():
-                row_str = row.to_json()
-                embedding = sentence_model.encode(row_str).tolist()
-                vectors.append(embedding)
-                payloads.append(
-                    {"source": row_str, "table": csv_file.filename, "row": i}
-                )
-
-        actions = [
-            {"_op_type": "index", "_index": index_name, "_source": doc}
-            for doc in payloads
-        ]
-        helpers.bulk(es_client, actions)
-
-        points = [
-            models.PointStruct(id=i, vector=embedding, payload=payload)
-            for i, (embedding, payload) in enumerate(zip(vectors, payloads))
-        ]
-        qdrant_client.upsert(collection_name=index_name, points=points)
-
     except Exception as e:
         return {"status": "fail", "message": str(e)}
 
@@ -93,30 +69,20 @@ async def update_index(index_name: str, csv_files: list[UploadFile]) -> dict:
         return {"status": "fail", "messsage": "index does not exist"}
 
     try:
-        vectors = []
-        payloads = []
+        points = []
+        actions = []
         for csv_file in csv_files:
             df = pd.read_csv(csv_file.file)
             for i, row in df.iterrows():
                 row_str = row.to_json()
+                payload = {"source": row_str, "table": csv_file.filename, "row": i}
                 embedding = sentence_model.encode(row_str).tolist()
-                vectors.append(embedding)
-                payloads.append(
-                    {"source": row_str, "table": csv_file.filename, "row": i}
+                points.append(models.PointStruct(vector=embedding, payload=payload))
+                actions.append(
+                    {"_op_type": "index", "_index": index_name, "_source": payload}
                 )
 
-        actions = [
-            {"_op_type": "index", "_index": index_name, "_source": doc}
-            for doc in payloads
-        ]
         helpers.bulk(es_client, actions)
-
-        curr_i = qdrant_client.get_collection(index_name).payload_count
-
-        points = [
-            models.PointStruct(id=curr_i + i, vector=embedding, payload=payload)
-            for i, (embedding, payload) in enumerate(zip(vectors, payloads))
-        ]
         qdrant_client.upsert(collection_name=index_name, points=points)
 
     except Exception as e:
