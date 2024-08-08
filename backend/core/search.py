@@ -57,7 +57,11 @@ async def search_data(
                 )
                 search_query_body = {
                     "_source": ["source", "table", "row"],
-                    "query": {"match": {"source": search_query, "fuzziness": "AUTO"}},
+                    "query": {
+                        "match": {
+                            "source": {"query": search_query, "fuzziness": "AUTO"}
+                        }
+                    },
                 }
                 # Get top-k results from ES
                 es_results = es_client.search(
