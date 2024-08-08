@@ -15,6 +15,7 @@ async def repair_data(
     reranker_type: Optional[str],
 ) -> dict:
 
+    # Retrieve top-k nearest tuples from the index
     retrieved_list = []
     if index_name is not None:
         search_results = await search_data(
@@ -31,6 +32,7 @@ async def repair_data(
         else:
             retrieved_list = search_results["results"]
 
+    # Call model giving it nearest tuples and target tuple
     prompt_results = await prompt_with_data(
         reasoner_name,
         entity_description,
@@ -43,4 +45,5 @@ async def repair_data(
     if prompt_results["status"] == "fail":
         return prompt_results
 
+    # Return final results to frontend
     return {"status": "success", "results": prompt_results}

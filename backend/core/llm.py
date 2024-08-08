@@ -13,9 +13,9 @@ async def prompt_with_data(
     retrieved_list: list[list],
 ) -> dict:
 
-    if model not in initialized_models:
+    if model_name not in initialized_models:
         return {"status": "fail", "message": "model not found"}
-
+    
     model = initialized_models[model_name]
 
     if retrieved_list == []:
