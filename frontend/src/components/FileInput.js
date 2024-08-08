@@ -30,7 +30,6 @@ const FileInput = (props) => {
           props.type === "single" ? "No file selected" : "No folder selected"
         }
         InputProps={{ readOnly: true }}
-        sx={{ bgcolor: "white" }}
       />
     </Stack>
   );

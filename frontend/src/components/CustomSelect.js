@@ -9,7 +9,7 @@ import {
 
 const CustomSelect = (props) => {
   return (
-    <FormControl fullWidth sx={{ bgcolor: "white" }}>
+    <FormControl fullWidth>
       <InputLabel>{props.label}</InputLabel>
       <Select
         disabled={props.disabled}
@@ -18,7 +18,7 @@ const CustomSelect = (props) => {
         multiple={props.multiple}
         onChange={(e) => props.onChange(e.target.value)}
         renderValue={(selected) =>
-          props.multiple ? selected.join(", ") : selected
+          props.multiple ? `${selected.length} selected` : selected
         }
       >
         {props.groupedOptions.flatMap((group, groupIndex) => [

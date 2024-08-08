@@ -1,8 +1,14 @@
-import React, { ComponentType } from "react";
-import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
+import React from "react";
+import {
+  styled,
+  createTheme,
+  ThemeProvider,
+  useTheme,
+} from "@mui/material/styles";
 import {
   Box,
   Paper,
+  Typography,
   Divider,
   TextField,
   Button,
@@ -15,31 +21,25 @@ import OptionButtonGroup from "./OptionButtonGroup";
 import CustomSelect from "./CustomSelect";
 import RadioButtonRegex from "./RadioButtonRegex";
 
-const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: "#EDEDED",
+const Item = styled(Paper)(() => ({
   fontFamily: "League Spartan",
   fontSize: "1.3rem",
-  textAlign: "left",
-  color: "black",
 }));
 
-const theme = createTheme({
+const buttonTheme = createTheme({
   palette: {
-    green: {
-      main: "#1cc533",
-      contrastText: "#ffffff",
-    },
+    green: { main: "#1cc533", contrastText: "#ffffff" },
   },
-  shape: {
-    borderRadius: 40,
-  },
+  shape: { borderRadius: 40 },
 });
 
 const ComponentGridWithName = (name, WrappedComponent) => {
   return (props) => (
     <Grid container>
       <Grid xs={4}>
-        <Item elevation={0}>{name}</Item>
+        <Paper elevation={0}>
+          <Typography fontSize="1.3rem">{name}</Typography>
+        </Paper>
       </Grid>
       <Grid xs={8}>
         <WrappedComponent {...props} />
@@ -48,24 +48,23 @@ const ComponentGridWithName = (name, WrappedComponent) => {
   );
 };
 
-const LabeledDivider = (props) => (
-  <Grid xs={12}>
-    <Divider
-      textAlign="left"
-      sx={{
-        color: "black",
-        fontFamily: "League Spartan",
-        fontSize: "1.3rem",
-        "&::before, &::after": {
-          borderTop: 3,
-          borderColor: "black",
-        },
-      }}
-    >
-      {props.label}
-    </Divider>
-  </Grid>
-);
+const LabeledDivider = (props) => {
+  const theme = useTheme();
+  const borderColor = theme.palette.border.main;
+  return (
+    <Grid xs={12}>
+      <Divider
+        textAlign="left"
+        sx={{
+          fontSize: "1.3rem",
+          "&::before, &::after": { borderTop: 3, borderColor: borderColor },
+        }}
+      >
+        {props.label}
+      </Divider>
+    </Grid>
+  );
+};
 
 const DirtyDataFileInput = ComponentGridWithName("Data", FileInput);
 const EntityDescriptionTextField = ComponentGridWithName(
@@ -93,15 +92,17 @@ const RerankerOptionButtonGroup = ComponentGridWithName(
 );
 
 const Panel = (props) => {
+  const theme = useTheme();
+  const backgroundColor = theme.palette.background.paper;
+  const borderColor = theme.palette.border.main;
   return (
     <Box
       display="flex"
-      // height="100%"
-      // width="100%"
+      width="100%"
       flexDirection="column"
       justifyContent="space-between"
-      padding={1}
-      sx={{ bgcolor: "#EDEDED" }}
+      padding={2}
+      bgcolor={backgroundColor}
     >
       <DirtyDataFileInput
         type="single"
@@ -116,7 +117,6 @@ const Panel = (props) => {
         rows={2}
         value={props.entityDescription}
         onChange={(e) => props.onChangeEntityDescription(e.target.value)}
-        sx={{ bgcolor: "white" }}
       />
       <DirtyColumnSelect
         disabled={!props.isDirtyDataUploaded}
@@ -175,7 +175,7 @@ const Panel = (props) => {
       />
 
       <Grid mdOffset="auto">
-        <ThemeProvider theme={theme}>
+        <ThemeProvider theme={buttonTheme}>
           <Button
             disabled={!props.isDirtyDataUploaded || props.dirtyColumn === ""}
             disableElevation

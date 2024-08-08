@@ -7,6 +7,7 @@ import {
   Tab,
   Typography,
   TextField,
+  useTheme,
 } from "@mui/material";
 import { TrophySpin } from "react-loading-indicators";
 
@@ -37,6 +38,8 @@ const TabPanel = (props) => {
 };
 
 const IndexModule = () => {
+  const theme = useTheme();
+  const borderColor = theme.palette.border.main;
   // States
   const [value, setValue] = useState(0);
 
@@ -177,14 +180,15 @@ const IndexModule = () => {
       flexDirection="column"
       height="100%"
       width="100%"
-      sx={{ border: 5, borderColor: "#545454" }}
+      border={5}
+      borderColor={borderColor}
     >
       <Tabs
         value={value}
         onChange={handleChange}
         textColor="primary"
         indicatorColor="primary"
-        sx={{ ".MuiTabs-flexContainer": { justifyContent: "center" } }}
+        // sx={{ ".MuiTabs-flexContainer": { justifyContent: "center" } }}
         variant="fullWidth"
       >
         <Tab label="Create" id="tab-0" />
@@ -194,6 +198,7 @@ const IndexModule = () => {
 
       <TabPanel value={value} index={0}>
         <Box
+          marginTop={3}
           display="flex"
           flexDirection="column"
           alignItems="center"
@@ -238,6 +243,7 @@ const IndexModule = () => {
       </TabPanel>
       <TabPanel value={value} index={1}>
         <Box
+          marginTop={3}
           display="flex"
           flexDirection="column"
           alignItems="center"
@@ -285,6 +291,7 @@ const IndexModule = () => {
       </TabPanel>
       <TabPanel value={value} index={2}>
         <Box
+          marginTop={3}
           display="flex"
           flexDirection="column"
           alignItems="center"

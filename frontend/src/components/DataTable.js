@@ -16,8 +16,6 @@ import {
 import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrowDown";
 import InfoIcon from "@mui/icons-material/Info";
 
-import DragDropFile from "./DragDrop";
-
 const CustomToolbar = (props) => {
   return (
     <GridToolbarContainer sx={{ backgroundColor: "#EDEDED" }}>
@@ -161,12 +159,8 @@ const DataTable = (props) => {
       columns={Object.values(table.columns)}
       onRowSelectionModelChange={(ids) => console.log(ids)}
       isRowSelectable={() => false}
-      slots={{
-        toolbar: () => CustomToolbar(props),
-        noRowsOverlay: () => {
-          return <DragDropFile onChange={props.onChangeDirtyDataFile} />;
-        },
-      }}
+      CustomToolbar={CustomToolbar}
+      slots={{ toolbar: () => CustomToolbar(props) }}
       sx={{
         fontSize: "0.8rem",
         ".MuiDataGrid-cell": {

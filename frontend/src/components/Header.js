@@ -12,19 +12,12 @@ const Header = (props) => {
   return (
     <AppBar position="sticky">
       <Toolbar>
-        <Typography
-          variant="h3"
-          fontFamily="League Spartan"
-          fontWeight="bold"
-          flex={1}
-          py={1}
-        >
+        <Typography variant="h3" fontWeight="bold" flex={1} py={1}>
           {props.text}
         </Typography>
         <Stack direction="row" spacing={5} alignItems="center" flex={1}>
           <Typography
             variant="h5"
-            fontFamily="League Spartan"
             onClick={() => props.onChangeView(true)}
             sx={{
               cursor: "pointer",
@@ -35,7 +28,6 @@ const Header = (props) => {
           </Typography>
           <Typography
             variant="h5"
-            fontFamily="League Spartan"
             onClick={() => props.onChangeView(false)}
             sx={{
               cursor: "pointer",
@@ -46,7 +38,7 @@ const Header = (props) => {
           </Typography>
         </Stack>
         <Stack direction="row" spacing={1} alignItems="center">
-          <Typography fontFamily="League Spartan">Light</Typography>
+          <Typography>Light</Typography>
           <FormControlLabel
             control={
               <ThemeSwitch
@@ -55,7 +47,7 @@ const Header = (props) => {
               />
             }
           />
-          <Typography fontFamily="League Spartan">Dark</Typography>
+          <Typography>Dark</Typography>
         </Stack>
       </Toolbar>
     </AppBar>

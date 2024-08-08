@@ -9,7 +9,6 @@ const Item = styled(Paper)(({ theme }) => ({
   fontFamily: "League Spartan",
   fontSize: "1rem",
   textAlign: "left",
-  color: "black",
 }));
 
 const DataTuple = (props) => {

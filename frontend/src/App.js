@@ -3,19 +3,8 @@ import { Routes, Route } from "react-router-dom";
 import { MainPage } from "./routes";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { CssBaseline, Box } from "@mui/material";
+import { lightTheme, darkTheme } from "./themes";
 import "./App.css";
-
-const darkTheme = createTheme({
-  palette: {
-    mode: "dark",
-  },
-});
-
-const lightTheme = createTheme({
-  palette: {
-    mode: "light",
-  },
-});
 
 const App = () => {
   const appname = "RetClean";

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box } from "@mui/material";
+import { Box, useTheme } from "@mui/material";
 
 import { parseData, cleanData, prepareData } from "../../utilities/data";
 
@@ -10,8 +10,11 @@ import { getIndexes } from "../../api/index";
 import Panel from "../../components/Panel";
 import DataTable from "../../components/DataTable";
 import Evidence from "../../components/Evidence";
+import DragDropFile from "../../components/DragDrop";
 
 const RepairModule = () => {
+  const theme = useTheme();
+  const borderColor = theme.palette.border.main;
   const repairOptionDefaultStrings = { Any: "*", Null: "NULL", Custom: "" };
 
   // States
@@ -332,13 +335,15 @@ const RepairModule = () => {
       display="flex"
       height="100%"
       width="100%"
-      sx={{ border: 5, borderColor: "#545454" }}
+      border={5}
+      borderColor={borderColor}
     >
       <Box
         id="left"
         flex={3}
         display="flex"
-        sx={{ borderRight: 5, borderColor: "#545454" }}
+        borderRight={5}
+        borderColor={borderColor}
       >
         <Panel
           dirtyDataFileName={dirtyData.fileName}
@@ -379,33 +384,31 @@ const RepairModule = () => {
         overflow="auto"
       >
         <Box id="rightTop" flex={4} display="flex" flexGrow={1}>
-          <DataTable
-            dirtyDataContent={dirtyData.content}
-            columns={
-              result.data.length === 0
-                ? dirtyData.columns
-                : [...dirtyData.columns, result.column]
-            }
-            onChangeDirtyDataFile={onChangeDirtyDataFile}
-            isDirtyDataUploaded={dirtyData.content !== null}
-            dirtyColumn={configuration.dirtyColumn}
-            pivotColumns={configuration.pivotColumns}
-            isIndexSelected={Object.values(configuration.indexState).some(
-              (value) => value
-            )}
-            result={result}
-            onMarkResult={onMarkResult}
-            onShowEvidence={onShowEvidence}
-            onApplyRepairs={onApplyRepairs}
-          />
+          {dirtyData.content === null ? (
+            <DragDropFile onChange={onChangeDirtyDataFile} />
+          ) : (
+            <DataTable
+              dirtyDataContent={dirtyData.content}
+              columns={
+                result.data.length === 0
+                  ? dirtyData.columns
+                  : [...dirtyData.columns, result.column]
+              }
+              onChangeDirtyDataFile={onChangeDirtyDataFile}
+              isDirtyDataUploaded={dirtyData.content !== null}
+              dirtyColumn={configuration.dirtyColumn}
+              pivotColumns={configuration.pivotColumns}
+              isIndexSelected={Object.values(configuration.indexState).some(
+                (value) => value
+              )}
+              result={result}
+              onMarkResult={onMarkResult}
+              onShowEvidence={onShowEvidence}
+              onApplyRepairs={onApplyRepairs}
+            />
+          )}
         </Box>
-        <Box
-          id="rightBottom"
-          sx={{
-            borderTop: result.sourceTuple !== null ? 5 : 0,
-            borderColor: "#545454",
-          }}
-        >
+        <Box id="rightBottom" borderTop={result.sourceTuple !== null ? 5 : 0}>
           {result.sourceTuple !== null && (
             <Evidence
               sourceTuple={result.sourceTuple}

@@ -1,7 +1,13 @@
 import React, { useState } from "react";
-import { FormControl, FormLabel } from "@mui/material";
+import { FormControl, FormLabel, useTheme } from "@mui/material";
 
 const DragDropFile = (props) => {
+  const theme = useTheme();
+  const textColor = theme.palette.text.dragDrop;
+  const borderColor = theme.palette.custom.dragDrop.borderColor;
+  const activeColor = theme.palette.custom.dragDrop.backgroundColor.active;
+  const inactiveColor = theme.palette.custom.dragDrop.backgroundColor.inactive;
+
   const [dragActive, setDragActive] = useState(false);
 
   const handleDrag = (e) => {
@@ -30,25 +36,23 @@ const DragDropFile = (props) => {
       onDragOver={handleDrag}
       onDrop={handleDrop}
       sx={{
-        pt: "2%",
-        px: "3%",
-        height: "90%",
-        width: "94%",
-        textAlign: "center",
+        padding: "2%",
+        height: "100%",
+        width: "100%",
       }}
     >
       <FormLabel
         sx={{
-          fontFamily: "League Spartan",
-          fontSize: "1.5rem",
+          fontSize: "2rem",
           height: "100%",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           borderStyle: "dashed",
-          borderColor: "#cbd5e1",
+          color: textColor,
+          borderColor: { borderColor },
           borderRadius: 10,
-          backgroundColor: dragActive ? "#ffffff" : "#f8fafc",
+          backgroundColor: dragActive ? activeColor : inactiveColor,
           textDecorationLine: dragActive ? "underline" : "none",
         }}
       >

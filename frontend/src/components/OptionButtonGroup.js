@@ -1,7 +1,9 @@
 import React from "react";
-import { Button, ButtonGroup } from "@mui/material";
+import { Button, ButtonGroup, useTheme } from "@mui/material";
 
 const OptionButtonGroup = (props) => {
+  const theme = useTheme();
+  const backgroundColor = theme.palette.custom.button.background;
   return (
     <ButtonGroup
       fullWidth
@@ -9,7 +11,7 @@ const OptionButtonGroup = (props) => {
       size="large"
       variant="outlined"
       aria-label="outlined button group"
-      sx={{ bgColor: "white", height: 50 }}
+      sx={{ bgcolor: backgroundColor, height: 50 }}
     >
       {Object.keys(props.options).map((key, index) => (
         <Button
