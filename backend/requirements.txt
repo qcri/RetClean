@@ -6,3 +6,7 @@ pandas
 sentence-transformers
 elasticsearch
 qdrant-client
+python-multipart
+openai
+ollama
+anthropic
