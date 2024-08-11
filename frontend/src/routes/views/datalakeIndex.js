@@ -204,7 +204,7 @@ const IndexModule = () => {
           alignItems="center"
           justifyContent="center"
         >
-          <Typography variant="h6" sx={{ width: "60%" }}>
+          <Typography variant="h5" sx={{ width: "60%" }}>
             Create a new data lake index by uploading a folder of CSV files.
             Provide a unique name for your index. The uploaded data will be
             indexed under this name for easy retrieval and management.
@@ -249,7 +249,7 @@ const IndexModule = () => {
           alignItems="center"
           justifyContent="center"
         >
-          <Typography variant="h6" sx={{ width: "60%" }}>
+          <Typography variant="h5" sx={{ width: "60%" }}>
             Update an existing data lake index by selecting the index name.
             Upload a new folder of CSV files to add to the selected index. The
             new data will be indexed and merged with the selected index.
@@ -297,7 +297,7 @@ const IndexModule = () => {
           alignItems="center"
           justifyContent="center"
         >
-          <Typography variant="h6" sx={{ width: "60%" }}>
+          <Typography variant="h5" sx={{ width: "60%" }}>
             Delete an existing data lake index by selecting the index name from
             the dropdown menu. This action will permanently remove the selected
             index and all its associated data from the system.
