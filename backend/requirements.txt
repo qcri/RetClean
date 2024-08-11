@@ -1,3 +1,4 @@
+python-dotenv
 fastapi
 pydantic
 uvicorn
@@ -7,6 +8,6 @@ sentence-transformers
 elasticsearch
 qdrant-client
 python-multipart
-openai
+openai==0.28.1
 ollama
 anthropic

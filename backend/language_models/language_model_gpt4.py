@@ -40,7 +40,7 @@ class GPT4Repairer(LanguageModel):
         response = openai.ChatCompletion.create(
             engine="gpt4_imputer",  # The deployment name you chose when you deployed the GPT-3.5-Turbo or GPT-4 model.
             messages=text,
-            stop=None,
             temperature=0.001,
         )
+
         return self.extract_value_citation(response.choices[0]["message"]["content"])

@@ -1,3 +1,4 @@
+import time
 import pandas as pd
 from fastapi import UploadFile
 from qdrant_client import models
@@ -6,10 +7,11 @@ from core import es_client, qdrant_client, sentence_model
 
 
 async def get_indexes() -> dict:
-    index_names = []
+    es_index_names = []
+    qdrant_index_names = []
     try:
         es_indices_response = es_client.cat.indices(format="json")
-        index_names.extend(
+        es_index_names.extend(
             [
                 index["index"]
                 for index in es_indices_response
@@ -17,13 +19,14 @@ async def get_indexes() -> dict:
             ]
         )
         qdrant_indices_response = qdrant_client.get_collections()
-        index_names.extend(
+        qdrant_index_names.extend(
             [collection.name for collection in qdrant_indices_response.collections]
         )
 
     except Exception as e:
         return {"status": "fail", "message": str(e)}
 
+    index_names = list(set(es_index_names) & set(qdrant_index_names))
     return {"status": "success", "indexes": index_names}
 
 
@@ -34,7 +37,8 @@ async def create_index(index_name: str) -> dict:
         return {"status": "fail", "message": "index already exists"}
 
     try:
-        es_client.indices_client.create(
+        es_client.create(
+            id=index_name,
             index=index_name,
             body={
                 "mappings": {
@@ -46,6 +50,7 @@ async def create_index(index_name: str) -> dict:
                 },
             },
         )
+        print("created es index")
 
         qdrant_client.recreate_collection(
             collection_name=index_name,
@@ -54,6 +59,7 @@ async def create_index(index_name: str) -> dict:
                 distance=models.Distance.COSINE,
             ),
         )
+        print("created qdrant collection")
 
     except Exception as e:
         return {"status": "fail", "message": str(e)}
@@ -61,27 +67,53 @@ async def create_index(index_name: str) -> dict:
     return {"status": "success"}
 
 
-async def update_index(index_name: str, csv_files: list[UploadFile]) -> dict:
+async def update_index(index_name: str, files: list[UploadFile]) -> dict:
     if not (
         es_client.indices.exists(index=index_name)
         and qdrant_client.collection_exists(collection_name=index_name)
     ):
-        return {"status": "fail", "messsage": "index does not exist"}
+        return {"status": "fail", "message": "index does not exist"}
 
     try:
         points = []
         actions = []
-        for csv_file in csv_files:
-            df = pd.read_csv(csv_file.file)
-            for i, row in df.iterrows():
-                row_str = row.to_json()
-                payload = {"values": row_str, "table_name": csv_file.filename, "row_number": i}
-                embedding = sentence_model.encode(row_str).tolist()
-                points.append(models.PointStruct(vector=embedding, payload=payload))
-                actions.append(
-                    {"_op_type": "index", "_index": index_name, "_source": payload}
-                )
+        current_time = int(time.time() * 1e3)  # Get the timestamp once
 
+        for csv_file in files:
+            df = pd.read_csv(csv_file.file)
+            row_jsons = df.apply(lambda row: row.to_json(), axis=1)
+
+            embeddings = [
+                sentence_model.encode(row_str).tolist() for row_str in row_jsons
+            ]
+
+            points.extend(
+                models.PointStruct(
+                    id=current_time + i,  # Use incremental IDs to avoid collisions
+                    vector=embedding,
+                    payload={
+                        "values": row_json,
+                        "table_name": csv_file.filename,
+                        "row_number": i,
+                    },
+                )
+                for i, (row_json, embedding) in enumerate(zip(row_jsons, embeddings))
+            )
+
+            actions.extend(
+                {
+                    "_op_type": "index",
+                    "_index": index_name,
+                    "_source": {
+                        "values": row_json,
+                        "table_name": csv_file.filename,
+                        "row_number": i,
+                    },
+                }
+                for i, row_json in enumerate(row_jsons)
+            )
+
+        # Perform bulk operations
         helpers.bulk(es_client, actions)
         qdrant_client.upsert(collection_name=index_name, points=points)
 

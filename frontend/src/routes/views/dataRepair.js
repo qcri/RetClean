@@ -3,7 +3,7 @@ import { Box, useTheme } from "@mui/material";
 
 import { parseData, cleanData, prepareData } from "../../utilities/data";
 
-import { repairs } from "../../api/repair";
+import { getRepairs } from "../../api/repair";
 import { getModels } from "../../api/model";
 import { getIndexes } from "../../api/index";
 
@@ -11,6 +11,7 @@ import Panel from "../../components/Panel";
 import DataTable from "../../components/DataTable";
 import Evidence from "../../components/Evidence";
 import DragDropFile from "../../components/DragDrop";
+import { index } from "d3";
 
 const RepairModule = () => {
   const theme = useTheme();
@@ -52,25 +53,16 @@ const RepairModule = () => {
 
   // Effects
   useEffect(() => {
-    // const fetchModels = async () => {
-    //   const models = await getModels();
-    //   reasonersList(models);
-    // };
-    // fetchModels();
-    // const fetchIndexes = async () => {
-    //   const indexes = await getIndexes();
-    //   setSearchIndexList(indexes);
-    // };
-    // const indexData = fetchIndexes();
-    // setSearchIndexList(indexData["indexes"]);
-
-    let reasoners = [
-      { name: "Cloud Models", options: ["gpt", "claude"] },
-      { name: "Local Models", options: ["llama2", "falcon"] },
-    ];
-    setReasonersList(reasoners);
-    let searchIndexes = ["this one", "that one"];
-    setSearchIndexList(searchIndexes);
+    const fetchModels = async () => {
+      const model_data = await getModels();
+      setReasonersList(model_data.models);
+    };
+    fetchModels();
+    const fetchIndexes = async () => {
+      const indexData = await getIndexes();
+      setSearchIndexList(indexData.indexes);
+    };
+    fetchIndexes();
   }, []);
 
   useEffect(() => {
@@ -224,23 +216,30 @@ const RepairModule = () => {
       configuration.pivotColumns
     );
 
-    let indexType = "";
-    if (
-      configuration.indexState["Syntactic"] &&
-      configuration.indexState["Semantic"]
-    ) {
-      indexType = "both";
-    } else if (configuration.indexState["Semantic"]) {
-      indexType = "semantic";
-    } else if (configuration.indexState["Syntactic"]) {
-      indexType = "syntactic";
-    }
+    const indexName =
+      configuration.searchIndexName !== ""
+        ? configuration.searchIndexName
+        : null;
 
-    let rerankerType = "";
-    if (configuration.rerankState["ColBERT"]) {
-      rerankerType = "ColBERT";
-    } else if (configuration.rerankState["Cross Encoder"]) {
-      rerankerType = "Cross Encoder";
+    let indexType = null;
+    let rerankerType = null;
+    if (indexName !== null) {
+      if (
+        configuration.indexState["Syntactic"] &&
+        configuration.indexState["Semantic"]
+      ) {
+        indexType = "both";
+      } else if (configuration.indexState["Semantic"]) {
+        indexType = "semantic";
+      } else if (configuration.indexState["Syntactic"]) {
+        indexType = "syntactic";
+      }
+
+      if (configuration.rerankState["ColBERT"]) {
+        rerankerType = "ColBERT";
+      } else if (configuration.rerankState["Cross Encoder"]) {
+        rerankerType = "Cross Encoder";
+      }
     }
 
     const requestObj = {
@@ -250,12 +249,12 @@ const RepairModule = () => {
       pivot_names: Array.from(configuration.pivotColumns),
       pivot_data: pivotColumData,
       reasoner_name: configuration.reasonerName,
-      index_name: configuration.searchIndexName,
+      index_name: indexName,
       index_type: indexType,
       reranker_type: rerankerType,
     };
 
-    const repairs = await repairs(requestObj);
+    const repairs = await getRepairs(requestObj);
 
     let marked = new Set();
     let content = [...dirtyData.content];

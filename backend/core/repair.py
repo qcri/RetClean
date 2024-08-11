@@ -27,6 +27,7 @@ async def repair_data(
             pivot_data,
             reranker_type is not None,
         )
+
         if search_results["status"] == "fail":
             return search_results
         else:
@@ -42,6 +43,7 @@ async def repair_data(
         pivot_data,
         retrieved_list,
     )
+
     if prompt_results["status"] == "fail":
         return prompt_results
 

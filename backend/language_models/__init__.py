@@ -1,5 +1,4 @@
-from .language_model_1 import LanguageModel1
-from .language_model_2 import LanguageModel2
+from .language_model_gpt4 import GPT4Repairer
 
 # Map model names to their respective classes
-MODEL_MAP = {"language_model_1": LanguageModel1, "language_model_2": LanguageModel2}
+MODEL_MAP = {"GPT-4": GPT4Repairer}

@@ -64,14 +64,14 @@ const IndexModule = () => {
 
   // Effects
   useEffect(() => {
-    // const fetchIndexes = async () => {
-    //   const data = await getIndexes();
-    //   setIndexList(data);
-    // };
-    // fetchIndexes();
+    const fetchIndexes = async () => {
+      const data = await getIndexes();
+      setIndexList(data.indexes);
+    };
+    fetchIndexes();
 
-    let indexes = ["this one", "that one"];
-    setIndexList(indexes);
+    // let indexes = ["this one", "that one"];
+    // setIndexList(indexes);
   }, [
     createIndexState.isLoading,
     updateIndexState.isLoading,
@@ -112,9 +112,7 @@ const IndexModule = () => {
 
     let fileList = [];
     for (const file of files) {
-      if (file.type === "text/csv") {
-        fileList.push(file);
-      }
+      if (file.type === "text/csv") fileList.push(file);
     }
 
     if (type === "create") {
@@ -133,43 +131,23 @@ const IndexModule = () => {
   };
 
   const onCreateIndex = async () => {
-    setCreateIndexState({
-      ...createIndexState,
-      isLoading: true,
-    });
-    const data = await createIndex(
-      createIndexState.indexName,
-      createIndexState.files
-    );
-    setCreateIndexState({
-      ...createIndexState,
-      isLoading: false,
-    });
+    setCreateIndexState({ ...createIndexState, isLoading: true });
+    await createIndex(createIndexState.indexName, createIndexState.files);
+    setCreateIndexState({ ...createIndexState, isLoading: false });
   };
 
   const onUpdateIndex = async () => {
-    setUpdateIndexState({
-      ...updateIndexState,
-      isLoading: true,
-    });
-    const data = await updateIndex(
-      updateIndexState.indexName,
-      updateIndexState.files
-    );
-    setUpdateIndexState({
-      ...updateIndexState,
-      isLoading: false,
-    });
+    setUpdateIndexState({ ...updateIndexState, isLoading: true });
+    await updateIndex(updateIndexState.indexName, updateIndexState.files);
+    setUpdateIndexState({ ...updateIndexState, isLoading: false });
   };
 
   const onDeleteIndex = async () => {
+    setDeleteIndexState({ ...deleteIndexState, isLoading: true });
+    await deleteIndex(deleteIndexState.indexName);
     setDeleteIndexState({
       ...deleteIndexState,
-      isLoading: true,
-    });
-    const data = await deleteIndex(deleteIndexState.indexName);
-    setDeleteIndexState({
-      ...deleteIndexState,
+      indexName: "",
       isLoading: false,
     });
   };
