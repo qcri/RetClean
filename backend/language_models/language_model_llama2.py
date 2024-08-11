@@ -12,18 +12,16 @@ class LanguageModel1(LanguageModel):
     def __init__(self):
         super().__init__(type="local")
 
-    def initialize_model(self):
         load_dotenv()
-
         self.model = "llama2"
         # Huggingface login (needed for LLAMA models)
         login(token=os.getenv("HF_LOGIN_TOKEN"))
-        self.tokenizer = tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
+        self.tokenizer = tokenizer = AutoTokenizer.from_pretrained(
+            model_name, trust_remote_code=True
+        )
         self.model = LLM(
-                        model="meta-llama/Llama-2-7b-chat-hf",
-                        trust_remote_code=True,
-                        dtype="half"
-                    )
+            model="meta-llama/Llama-2-7b-chat-hf", trust_remote_code=True, dtype="half"
+        )
 
     def prompt_wrapper(self, text: str) -> str:
         # Example wrapper that modifies the input text
