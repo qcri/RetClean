@@ -11,16 +11,14 @@ import Panel from "../../components/Panel";
 import DataTable from "../../components/DataTable";
 import Evidence from "../../components/Evidence";
 import DragDropFile from "../../components/DragDrop";
-import { index } from "d3";
 
-const RepairModule = () => {
+const RepairModule = (props) => {
   const theme = useTheme();
   const borderColor = theme.palette.border.main;
   const repairOptionDefaultStrings = { Any: "*", Null: "NULL", Custom: "" };
 
   // States
   const [reasonersList, setReasonersList] = useState([]);
-  const [searchIndexList, setSearchIndexList] = useState([]);
 
   const [dirtyData, setDirtyData] = useState({
     fileName: "No file selected",
@@ -60,7 +58,7 @@ const RepairModule = () => {
     fetchModels();
     const fetchIndexes = async () => {
       const indexData = await getIndexes();
-      setSearchIndexList(indexData.indexes);
+      props.setSearchIndexList(indexData.indexes);
     };
     fetchIndexes();
   }, []);
@@ -358,14 +356,14 @@ const RepairModule = () => {
           isRepairOptionCustom={configuration.repairOptionState["Custom"]}
           repairString={configuration.repairString}
           onChangeRepairString={onChangeRepairString}
-          repairOptionDefaultStrings={configuration.repairOptionDefaultStrings}
+          repairOptionDefaultStrings={repairOptionDefaultStrings}
           pivotColumns={configuration.pivotColumns}
           onSelectPivotColumns={onSelectPivotColumns}
           reasonerName={configuration.reasonerName}
           reasonerNames={reasonersList}
           onSelectReasonerName={onSelectReasonerName}
           searchIndexName={configuration.searchIndexName}
-          searchIndexNames={searchIndexList}
+          searchIndexNames={props.searchIndexList}
           onSelectSearchIndexName={onSelectSearchIndexName}
           indexState={configuration.indexState}
           onChangeIndexType={onChangeIndexType}

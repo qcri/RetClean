@@ -8,6 +8,8 @@ import IndexModule from "./views/datalakeIndex";
 export const MainPage = (props) => {
   const [isRepairView, setIsRepairView] = useState(true);
   const onChangeView = (val) => setIsRepairView(val);
+  const [indexList, setIndexList] = useState([]);
+
   return (
     <Box id="outer" display="flex" flexDirection="column" height="100vh">
       <Box id="header">
@@ -24,14 +26,20 @@ export const MainPage = (props) => {
         display={isRepairView ? "flex" : "none"}
         flexGrow={1}
       >
-        <RepairModule />
+        <RepairModule
+          searchIndexList={indexList}
+          setSearchIndexList={setIndexList}
+        />
       </Box>
       <Box
         id="index-body"
         display={!isRepairView ? "flex" : "none"}
         flexGrow={1}
       >
-        <IndexModule />
+        <IndexModule
+          searchIndexList={indexList}
+          setSearchIndexList={setIndexList}
+        />
       </Box>
     </Box>
   );

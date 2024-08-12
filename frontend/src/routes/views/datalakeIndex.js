@@ -37,9 +37,10 @@ const TabPanel = (props) => {
   );
 };
 
-const IndexModule = () => {
+const IndexModule = (props) => {
   const theme = useTheme();
   const borderColor = theme.palette.border.main;
+
   // States
   const [value, setValue] = useState(0);
 
@@ -60,23 +61,14 @@ const IndexModule = () => {
     isLoading: false,
   });
 
-  const [indexList, setIndexList] = useState([]);
-
   // Effects
   useEffect(() => {
     const fetchIndexes = async () => {
       const data = await getIndexes();
-      setIndexList(data.indexes);
+      props.setSearchIndexList(data.indexes);
     };
     fetchIndexes();
-
-    // let indexes = ["this one", "that one"];
-    // setIndexList(indexes);
-  }, [
-    createIndexState.isLoading,
-    updateIndexState.isLoading,
-    deleteIndexState.isLoading,
-  ]);
+  }, []);
 
   // Methods
   const handleChange = (event, newValue) => {
@@ -133,6 +125,8 @@ const IndexModule = () => {
   const onCreateIndex = async () => {
     setCreateIndexState({ ...createIndexState, isLoading: true });
     await createIndex(createIndexState.indexName, createIndexState.files);
+    const indexData = await getIndexes();
+    props.setSearchIndexList(indexData.indexes);
     setCreateIndexState({ ...createIndexState, isLoading: false });
   };
 
@@ -145,6 +139,8 @@ const IndexModule = () => {
   const onDeleteIndex = async () => {
     setDeleteIndexState({ ...deleteIndexState, isLoading: true });
     await deleteIndex(deleteIndexState.indexName);
+    const indexData = await getIndexes();
+    props.setSearchIndexList(indexData.indexes);
     setDeleteIndexState({
       ...deleteIndexState,
       indexName: "",
@@ -247,7 +243,9 @@ const IndexModule = () => {
                   selection={updateIndexState.indexName}
                   multiple={false}
                   includeGroupNames={false}
-                  groupedOptions={[{ name: "columns", options: indexList }]}
+                  groupedOptions={[
+                    { name: "columns", options: props.searchIndexList },
+                  ]}
                   onChange={onSelectupdateIndexStateName}
                 />
                 <FileInput
@@ -296,7 +294,9 @@ const IndexModule = () => {
                   selection={deleteIndexState.indexName}
                   multiple={false}
                   includeGroupNames={false}
-                  groupedOptions={[{ name: "columns", options: indexList }]}
+                  groupedOptions={[
+                    { name: "columns", options: props.searchIndexList },
+                  ]}
                   onChange={onSelectdeleteIndexStateName}
                 />
                 <Button

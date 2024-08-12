@@ -33,8 +33,13 @@ export const updateIndex = async (indexName, files) => {
   const uri = "http://localhost:8000/index";
   let formData = new FormData();
   try {
+    formData.append("index_name", indexName);
+    files.forEach((file) => {
+      formData.append("files", file);
+    });
+
     const data = await fetch(uri, {
-      method: "POST",
+      method: "PUT",
       body: formData,
     }).then((res) => res.json());
     return data;
