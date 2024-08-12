@@ -22,7 +22,7 @@ class LanguageModel(ABC):
         # Method 1: Expected JSON format, no noise
         try:
             response_dict = eval(model_response)    
-            return response_dict
+            return {"value": response_dict["value"], "table_name": "_".join(response_dict["citation"].split("_")[:-1]), "row_number": response_dict["citation"].split("_")[-1]}
         except:
             pass
 
@@ -32,7 +32,7 @@ class LanguageModel(ABC):
             start = model_response.find("{")
             end = model_response.rfind("}") + 1
             response_dict = eval(model_response[start:end])
-            return response_dict
+            return {"value": response_dict["value"], "table_name": "_".join(response_dict["citation"].split("_")[:-1]), "row_number": response_dict["citation"].split("_")[-1]}
         except:
             pass
 
@@ -56,10 +56,10 @@ class LanguageModel(ABC):
             except:
                 citation = "Unknown"
             
-            return {"value": value, "citation": citation}
+            return {"value": value, "table_name": "_".join(citation.split("_")[:-1]), "row_number": citation.split("_")[-1]}
 
         except:
             pass
 
         # If all above fails
-        return {"value": "Unknown", "citation": "Unknown"}
+        return {"value": "Unknown", "table_name": "Unknown", "row_number": "Unknown"}
