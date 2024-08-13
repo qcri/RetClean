@@ -22,10 +22,13 @@ class LanguageModel(ABC):
         # Method 1: Expected JSON format, no noise
         try:
             response_dict = eval(model_response)
+            value = response_dict["value"]
+            table_name = response_dict["table_name"] if response_dict["table_name"] != '' else None
+            row_number = response_dict["row_number"] if response_dict["row_number"] != '' else None
             return {
-                "value": response_dict["value"],
-                "table_name": "_".join(response_dict["citation"].split("_")[:-1]),
-                "row_number": response_dict["citation"].split("_")[-1],
+                "value": value,
+                "table_name": table_name,
+                "row_number": row_number
             }
 
         except:
@@ -37,10 +40,13 @@ class LanguageModel(ABC):
             start = model_response.find("{")
             end = model_response.rfind("}") + 1
             response_dict = eval(model_response[start:end])
+            value = response_dict["value"]
+            table_name = response_dict["table_name"] if response_dict["table_name"] != '' else None
+            row_number = response_dict["row_number"] if response_dict["row_number"] != '' else None
             return {
-                "value": response_dict["value"],
-                "table_name": "_".join(response_dict["citation"].split("_")[:-1]),
-                "row_number": response_dict["citation"].split("_")[-1],
+                "value": value,
+                "table_name": table_name,
+                "row_number": row_number
             }
         except:
             pass
@@ -50,22 +56,30 @@ class LanguageModel(ABC):
             # Get value
             try:
                 # find the term "value : " in the response and extract everything after that till the next white space
-                start = model_response.find("value : ") + len("value : ")
-                end = model_response.find(" ", start)
-                value = model_response[start:end]
+                value_start = model_response.find("value : ") + len("value : ")
+                value_end = model_response.find(" ", value_start)
+                value = model_response[value_start:value_end]
+                value = value if value != '' else None
+
             except:
                 value = None
 
             # Get citation
             try:
-                # find the term "citation : " in the response and extract everything after that till the next white space
-                start = model_response.find("citation : ") + len("citation : ")
-                end = model_response.find(" ", start)
-                citation = model_response[start:end]
-                table_name = "_".join(citation.split("_")[:-1])
-                row_number = citation.split("_")[-1]
+                # find the term "table_name : " in the response and extract everything after that till the next white space
+                table_name_start = model_response.find("table_name : ") + len("table_name : ")
+                table_name_end = model_response.find(" ", table_name_start)
+                table_name = model_response[table_name_start:table_name_end]
+                table_name = table_name if table_name != '' else None
+
+                # find the term "row_number : " in the response and extract everything after that till the next white space
+                row_number_start = model_response.find("row_number : ") + len("row_number : ")
+                row_number_end = model_response.find(" ", row_number_start)
+                row_number = model_response[row_number_start:row_number_end]
+                row_number = row_number if row_number != '' else None
+
             except:
-                citation, table_name, row_number = None, None, None
+                table_name, row_number = None, None
 
             return {"value": value, "table_name": table_name, "row_number": row_number}
 

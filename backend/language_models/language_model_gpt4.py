@@ -29,7 +29,7 @@ class GPT4Repairer(LanguageModel):
         messages = [
             {
                 "role": "system",
-                "content": "You are a data expert. Your task is to provide the value of the missing attribute for the given object. If a context is given which contains other related objects, you must only use those to determine the missing attribute value for the target entity. If a context is not provided, you must use your own knowledge to determine the value for the missing attribute. Your response should have the following format: {'value' : <the value for the missing attribute> , 'citation' : <citation value of the object from within the context you got missing value from OR 'self' if no context is provided>. Do not return any additional text or explanation.",
+                "content": "You are a data expert. Your task is to provide the value of the missing attribute for the given object. If a context is given which contains other related objects, you must only use those to determine the missing attribute value for the target entity. If a context is not provided, you must use your own knowledge to determine the value for the missing attribute. Your response should have the following format: {'value' : <the value for the missing attribute> , 'table_name' : <'' if no context is given, else the table_name value of the object from the context you took the value from> , 'row_number' : <'' if no context is given, else the row_number value of the object from the context you took the value from>. Do not return any additional text or explanation.",
             },
             {"role": "user", "content": text},
         ]
