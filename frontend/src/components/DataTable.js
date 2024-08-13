@@ -6,6 +6,7 @@ import {
   Tooltip,
   Checkbox,
   FormControlLabel,
+  useTheme,
 } from "@mui/material";
 import {
   DataGrid,
@@ -18,7 +19,7 @@ import InfoIcon from "@mui/icons-material/Info";
 
 const CustomToolbar = (props) => {
   return (
-    <GridToolbarContainer sx={{ backgroundColor: "#EDEDED" }}>
+    <GridToolbarContainer>
       {/* <GridToolbarFilterButton /> */}
       <ButtonGroup
         disableElevation
@@ -43,7 +44,7 @@ const CustomToolbar = (props) => {
 const ResultCell = ({ params, props }) => {
   return (
     <Box>
-      {params.value !== "" && params.value !== "UNKOWN" ? (
+      {params.value !== null ? (
         <Box>
           <Tooltip title={params.value}>
             <FormControlLabel
@@ -71,10 +72,12 @@ const ResultCell = ({ params, props }) => {
 };
 
 const DataTable = (props) => {
-  const [table, setTable] = useState({
-    columns: {},
-    rows: [],
-  });
+  const theme = useTheme();
+  const headerTextColor = theme.palette.custom.table.headers.color;
+  const headerBackgroundColor =
+    theme.palette.custom.table.headers.backgroundColor;
+  const tableBorderColor = theme.palette.custom.table.border.main;
+  const [table, setTable] = useState({ columns: {}, rows: [] });
 
   useEffect(() => {
     if (props.isDirtyDataUploaded) {
@@ -92,7 +95,7 @@ const DataTable = (props) => {
           field: header,
           headerName:
             header === props.result.column
-              ? `${props.dirtyColumn} repairs`
+              ? `Repairs for: ${props.dirtyColumn}`
               : header,
           width: 150,
           editable: true,
@@ -124,11 +127,7 @@ const DataTable = (props) => {
         (i) => ({ id: i, ...props.dirtyDataContent[i] })
       );
 
-      setTable({
-        ...table,
-        columns: columns,
-        rows: rows,
-      });
+      setTable({ ...table, columns: columns, rows: rows });
     }
   }, [props.dirtyDataContent, props.result]);
 
@@ -162,38 +161,34 @@ const DataTable = (props) => {
       CustomToolbar={CustomToolbar}
       slots={{ toolbar: () => CustomToolbar(props) }}
       sx={{
-        fontSize: "0.8rem",
+        fontSize: "1.0 rem",
         ".MuiDataGrid-cell": {
           border: 1,
-          borderColor: "#EDEDED",
+          borderColor: tableBorderColor,
         },
         "& .MuiDataGrid-sortIcon": {
           opacity: 1,
-          color: "white",
+          color: headerTextColor,
         },
         "& .MuiDataGrid-menuIconButton": {
           opacity: 1,
-          color: "white",
+          color: headerTextColor,
         },
         "& .normal--header": {
-          backgroundColor: "black",
-          color: "white",
+          backgroundColor: headerBackgroundColor,
+          color: headerTextColor,
         },
         "& .dirty--header": {
-          backgroundColor: "#bf0303",
-          color: "white",
+          backgroundColor: "red",
+          color: headerTextColor,
         },
         "& .pivot--header": {
           backgroundColor: "orange",
-          color: "white",
-        },
-        "& .result--header, & .result--cell": {
-          borderLeft: 4,
-          borderLeftColor: "black",
+          color: headerTextColor,
         },
         "& .result--header": {
           backgroundColor: "green",
-          color: "white",
+          color: headerTextColor,
         },
       }}
     />

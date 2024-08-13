@@ -1,5 +1,4 @@
 export const getRepairs = async (payload) => {
-  console.log("getRepairs payload:", payload);
   const uri = "http://localhost:8000/repair";
   try {
     const data = fetch(uri, {

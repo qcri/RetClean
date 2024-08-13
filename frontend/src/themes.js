@@ -28,6 +28,15 @@ export const lightTheme = createTheme({
       button: {
         background: "#ffffff",
       },
+      table: {
+        headers: {
+          color: "#ffffff",
+          backgroundColor: "#000000",
+        },
+        border: {
+          main: "#EDEDED",
+        },
+      },
     },
   },
   typography: {
@@ -37,7 +46,7 @@ export const lightTheme = createTheme({
     MuiInputBase: {
       styleOverrides: {
         root: {
-          backgroundColor: "#ffffff", // Input fields background color
+          backgroundColor: "#ffffff",
         },
       },
     },
@@ -66,11 +75,20 @@ export const darkTheme = createTheme({
         borderColor: "#555",
         backgroundColor: {
           active: "#2c2c2c",
-          inactive: "#141414", // Darker inactive background color
+          inactive: "#141414",
         },
       },
       button: {
         background: "#2c2c2c",
+      },
+      table: {
+        headers: {
+          color: "#000000",
+          backgroundColor: "#E0E0E0",
+        },
+        border: {
+          main: "#2A2A2A",
+        },
       },
     },
   },
