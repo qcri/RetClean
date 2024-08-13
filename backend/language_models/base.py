@@ -45,7 +45,7 @@ class LanguageModel(ABC):
                 end = model_response.find(" ", start)
                 value = model_response[start:end]
             except:
-                value = "Unknown"
+                value = None
 
             # Get citation
             try:
@@ -54,7 +54,7 @@ class LanguageModel(ABC):
                 end = model_response.find(" ", start)
                 citation = model_response[start:end]
             except:
-                citation = "Unknown"
+                citation = None
             
             return {"value": value, "table_name": "_".join(citation.split("_")[:-1]), "row_number": citation.split("_")[-1]}
 
@@ -62,4 +62,4 @@ class LanguageModel(ABC):
             pass
 
         # If all above fails
-        return {"value": "Unknown", "table_name": "Unknown", "row_number": "Unknown"}
+        return {"value": None, "table_name": None, "row_number": None}
