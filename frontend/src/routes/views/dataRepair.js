@@ -253,6 +253,7 @@ const RepairModule = (props) => {
     };
 
     const repairs = await getRepairs(requestObj);
+    console.log(repairs);
 
     let marked = new Set();
     let content = [...dirtyData.content];
