@@ -22,7 +22,12 @@ class LanguageModel(ABC):
         # Method 1: Expected JSON format, no noise
         try:
             response_dict = eval(model_response)
-            return response_dict
+            return {
+                "value": response_dict["value"],
+                "table_name": "_".join(response_dict["citation"].split("_")[:-1]),
+                "row_number": response_dict["citation"].split("_")[-1],
+            }
+
         except:
             pass
 
@@ -32,7 +37,11 @@ class LanguageModel(ABC):
             start = model_response.find("{")
             end = model_response.rfind("}") + 1
             response_dict = eval(model_response[start:end])
-            return response_dict
+            return {
+                "value": response_dict["value"],
+                "table_name": "_".join(response_dict["citation"].split("_")[:-1]),
+                "row_number": response_dict["citation"].split("_")[-1],
+            }
         except:
             pass
 
@@ -45,7 +54,7 @@ class LanguageModel(ABC):
                 end = model_response.find(" ", start)
                 value = model_response[start:end]
             except:
-                value = "Unknown"
+                value = None
 
             # Get citation
             try:
@@ -53,13 +62,15 @@ class LanguageModel(ABC):
                 start = model_response.find("citation : ") + len("citation : ")
                 end = model_response.find(" ", start)
                 citation = model_response[start:end]
+                table_name = "_".join(citation.split("_")[:-1])
+                row_number = citation.split("_")[-1]
             except:
-                citation = "Unknown"
+                citation, table_name, row_number = None, None, None
 
-            return {"value": value, "citation": citation}
+            return {"value": value, "table_name": table_name, "row_number": row_number}
 
         except:
             pass
 
         # If all above fails
-        return {"value": "Unknown", "citation": "Unknown"}
+        return {"value": None, "table_name": None, "row_number": None}
