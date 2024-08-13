@@ -11,11 +11,15 @@ async def search_data(
     index_name: str,
     index_type: str,
     target_name: str,
-    target_values: list[str],
+    target_data: list[dict],
     pivot_names: list[str],
-    pivot_values: list[list],
+    pivot_data: list[dict],
     will_rerank: bool = False,
 ) -> dict:
+
+    ids = [data["id"] for data in target_data]
+    target_values = [data["values"] for data in target_data]
+    pivot_values = [data["values"] for data in pivot_data]
 
     # Check if index exists
     if not (
@@ -24,7 +28,7 @@ async def search_data(
     ):
         return {"status": "fail", "message": "index does not exist"}
 
-    # Determine the number of top-k results to retrieve based on type of index chosen 
+    # Determine the number of top-k results to retrieve based on type of index chosen
     if index_type == "both":
         k = RERANK_MULTIPLE_TOP_K if will_rerank else NO_RERANK_MULTIPLE_TOP_K
     else:
@@ -47,9 +51,9 @@ async def search_data(
                     collection_name=index_name,
                     query_vector=search_query_embedding,
                     limit=k,
-                ) # Expected Format: [{"source": str, "table": str, "row": int, "score": float} , {"source": str, "table": str, "row": int, "score": float} , ... ]
+                )  # Expected Format: [{"source": str, "table": str, "row": int, "score": float} , {"source": str, "table": str, "row": int, "score": float} , ... ]
                 search_results.extend(qdrant_results)
-            
+
             if index_type in ["syntactic", "both"]:
                 # Format data into appropriate query format for ES
                 search_query = search_preprocess(
@@ -68,13 +72,13 @@ async def search_data(
                     index=index_name,
                     body=search_query_body,
                     size=k,
-                ) # Expected Format: [{"source": str, "table": str, "row": int, "score": float} , {"source": str, "table": str, "row": int, "score": float} , ... ]
+                )  # Expected Format: [{"source": str, "table": str, "row": int, "score": float} , {"source": str, "table": str, "row": int, "score": float} , ... ]
                 search_results.extend(es_results["hits"]["hits"])
 
         except Exception as e:
             return {"status": "fail", "message": str(e)}
 
         results.append(search_results)
-    
-    # results is 2D list where for each target value, we have a list of top-k results 
+
+    # results is 2D list where for each target value, we have a list of top-k results
     return {"status": "success", "results": results}

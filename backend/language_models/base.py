@@ -17,11 +17,11 @@ class LanguageModel(ABC):
         pass
 
     def extract_value_citation(self, model_response: str) -> str:
-        # Parse model output and return 
-        
+        # Parse model output and return
+
         # Method 1: Expected JSON format, no noise
         try:
-            response_dict = eval(model_response)    
+            response_dict = eval(model_response)
             return response_dict
         except:
             pass
@@ -55,7 +55,7 @@ class LanguageModel(ABC):
                 citation = model_response[start:end]
             except:
                 citation = "Unknown"
-            
+
             return {"value": value, "citation": citation}
 
         except:

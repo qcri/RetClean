@@ -261,10 +261,10 @@ const RepairModule = (props) => {
     for (let i = 0; i < dirtyData.content.length; i++) {
       let rowObj = content[i];
       if (dirtyData.rows.has(i)) {
-        const repairValue = repairs[j]["repair"];
+        const repairValue = repairs[j];
         rowObj[result.column] = repairValue;
         data.push(repairs[j]);
-        if (repairValue !== "UNKNOWN") marked.add(i);
+        if (repairValue !== null) marked.add(i);
         j++;
       } else {
         rowObj[result.column] = "";
@@ -293,9 +293,9 @@ const RepairModule = (props) => {
 
   const onShowEvidence = (index) => {
     let dataObj = result.data[index];
-    let sourceTuple = dataObj["source"];
-    let sourceTableName = dataObj["table"];
-    let sourceRowNumber = dataObj["row"];
+    let sourceTuple = dataObj["values"];
+    let sourceTableName = dataObj["table_name"];
+    let sourceRowNumber = dataObj["row_number"];
 
     setResult({
       ...result,

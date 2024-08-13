@@ -162,7 +162,6 @@ const IndexModule = (props) => {
         onChange={handleChange}
         textColor="primary"
         indicatorColor="primary"
-        // sx={{ ".MuiTabs-flexContainer": { justifyContent: "center" } }}
         variant="fullWidth"
       >
         <Tab label="Create" id="tab-0" />
