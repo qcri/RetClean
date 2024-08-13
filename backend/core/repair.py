@@ -46,6 +46,8 @@ async def repair_data(
 
     if prompt_results["status"] == "fail":
         return prompt_results
+    else:
+        results = prompt_results["results"]
 
     # Return final results to frontend
-    return {"status": "success", "results": prompt_results}
+    return {"status": "success", "results": results}

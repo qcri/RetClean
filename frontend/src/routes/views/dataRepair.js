@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Box, useTheme } from "@mui/material";
+import { Mosaic } from "react-loading-indicators";
 
 import { parseData, cleanData, prepareData } from "../../utilities/data";
 
@@ -25,6 +26,7 @@ const RepairModule = (props) => {
     content: null,
     columns: [],
     rows: new Set(),
+    isLoading: false,
   });
 
   const [configuration, setConfiguration] = useState({
@@ -92,6 +94,7 @@ const RepairModule = (props) => {
 
   // Pre-repair Methods
   const onChangeDirtyDataFile = async (files) => {
+    if (files.length === 0) return;
     const file = files[0];
     let content = await parseData(file);
     content = cleanData(content);
@@ -252,8 +255,10 @@ const RepairModule = (props) => {
       reranker_type: rerankerType,
     };
 
-    const repairs = await getRepairs(requestObj);
-    console.log(repairs);
+    setDirtyData({ ...dirtyData, isLoading: true });
+    const response = await getRepairs(requestObj);
+    setDirtyData({ ...dirtyData, isLoading: false });
+    const repairs = response.results;
 
     let marked = new Set();
     let content = [...dirtyData.content];
@@ -262,7 +267,7 @@ const RepairModule = (props) => {
     for (let i = 0; i < dirtyData.content.length; i++) {
       let rowObj = content[i];
       if (dirtyData.rows.has(i)) {
-        const repairValue = repairs[j];
+        const repairValue = repairs[j]["value"];
         rowObj[result.column] = repairValue;
         data.push(repairs[j]);
         if (repairValue !== null) marked.add(i);
@@ -294,7 +299,7 @@ const RepairModule = (props) => {
 
   const onShowEvidence = (index) => {
     let dataObj = result.data[index];
-    let sourceTuple = dataObj["values"];
+    let sourceTuple = dataObj["value"];
     let sourceTableName = dataObj["table_name"];
     let sourceRowNumber = dataObj["row_number"];
 
@@ -381,40 +386,59 @@ const RepairModule = (props) => {
         flexDirection="column"
         overflow="auto"
       >
-        <Box id="rightTop" flex={4} display="flex" flexGrow={1}>
-          {dirtyData.content === null ? (
-            <DragDropFile onChange={onChangeDirtyDataFile} />
-          ) : (
-            <DataTable
-              dirtyDataContent={dirtyData.content}
-              columns={
-                result.data.length === 0
-                  ? dirtyData.columns
-                  : [...dirtyData.columns, result.column]
-              }
-              onChangeDirtyDataFile={onChangeDirtyDataFile}
-              isDirtyDataUploaded={dirtyData.content !== null}
-              dirtyColumn={configuration.dirtyColumn}
-              pivotColumns={configuration.pivotColumns}
-              isIndexSelected={Object.values(configuration.indexState).some(
-                (value) => value
+        {dirtyData.isLoading ? (
+          <Box
+            id="rightTopLoading"
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            flexGrow={1}
+          >
+            <Mosaic
+              color={["#33CCCC", "#33CC36", "#B8CC33", "#FCCA00"]}
+              style={{ fontSize: "80px" }}
+              text="Repairing"
+            />
+          </Box>
+        ) : (
+          <>
+            <Box id="rightTop" flex={4} display="flex" flexGrow={1}>
+              {dirtyData.content === null ? (
+                <DragDropFile onChange={onChangeDirtyDataFile} />
+              ) : (
+                <DataTable
+                  dirtyDataContent={dirtyData.content}
+                  columns={
+                    result.data.length === 0
+                      ? dirtyData.columns
+                      : [...dirtyData.columns, result.column]
+                  }
+                  onChangeDirtyDataFile={onChangeDirtyDataFile}
+                  isDirtyDataUploaded={dirtyData.content !== null}
+                  dirtyColumn={configuration.dirtyColumn}
+                  pivotColumns={configuration.pivotColumns}
+                  isIndexSelected={configuration.searchIndexName !== ""}
+                  result={result}
+                  onMarkResult={onMarkResult}
+                  onShowEvidence={onShowEvidence}
+                  onApplyRepairs={onApplyRepairs}
+                />
               )}
-              result={result}
-              onMarkResult={onMarkResult}
-              onShowEvidence={onShowEvidence}
-              onApplyRepairs={onApplyRepairs}
-            />
-          )}
-        </Box>
-        <Box id="rightBottom" borderTop={result.sourceTuple !== null ? 5 : 0}>
-          {result.sourceTuple !== null && (
-            <Evidence
-              sourceTuple={result.sourceTuple}
-              sourceTableName={result.sourceTableName}
-              sourceRowNumber={result.sourceRowNumber}
-            />
-          )}
-        </Box>
+            </Box>
+            <Box
+              id="rightBottom"
+              borderTop={result.sourceTuple !== null ? 5 : 0}
+            >
+              {result.sourceTuple !== null && (
+                <Evidence
+                  sourceTuple={result.sourceTuple}
+                  sourceTableName={result.sourceTableName}
+                  sourceRowNumber={result.sourceRowNumber}
+                />
+              )}
+            </Box>
+          </>
+        )}
       </Box>
     </Box>
   );

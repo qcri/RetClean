@@ -177,7 +177,11 @@ const Panel = (props) => {
       <Grid mdOffset="auto">
         <ThemeProvider theme={buttonTheme}>
           <Button
-            disabled={!props.isDirtyDataUploaded || props.dirtyColumn === ""}
+            disabled={
+              !props.isDirtyDataUploaded ||
+              props.dirtyColumn === "" ||
+              props.reasonerName == ""
+            }
             disableElevation
             size="large"
             variant="contained"
