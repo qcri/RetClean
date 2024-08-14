@@ -70,8 +70,7 @@ const ResultCell = ({ params, props }) => {
             <Button
               startIcon={<InfoIcon />}
               onClick={(e) => props.onShowEvidence(params.id)}
-              // onClick={(e) => console.log(params.id)}
-              ></Button>
+            ></Button>
           )}
         </Box>
       ) : (
@@ -161,7 +160,7 @@ const DataTable = (props) => {
 
   return (
     <DataGrid
-      height="100%"
+      // height="100%"
       rows={table.rows}
       columns={Object.values(table.columns)}
       onRowSelectionModelChange={(ids) => console.log(ids)}
