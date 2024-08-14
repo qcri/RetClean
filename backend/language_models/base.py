@@ -13,29 +13,30 @@ class LanguageModel(ABC):
         pass
 
     @abstractmethod
-    def generate(self, text: str) -> str:
+    def generate(self, text: str, retrieved: list) -> str:
         pass
 
-    def extract_value_citation(self, model_response: str) -> str:
+    def extract_value_citation(self, model_response: str, retrieved: list) -> str:
         # Parse model output and return
 
         # Method 1: Expected JSON format, no noise
         try:
-            print("*"*50)
+            # print("*"*50)
             print("METHOD 1 "*3)
-            print(model_response)
+            # print(model_response)
             response_dict = eval(model_response)
-            print("response_dict", response_dict)
+            # print("response_dict", response_dict)
             value = response_dict["value"]
-            print("value", value)
             table_name = response_dict["table_name"] if response_dict["table_name"].lower().strip() not in ["", "none", "unknown"] else None
-            print("table_name", response_dict["table_name"])
             row_number = response_dict["row_number"] if str(response_dict["row_number"]).lower().strip() not in ["", "none", "unknown"] else None
-            print("row_number", response_dict["row_number"])
+            retrived_object = retrieved[int(response_dict["object_id"].split(" ")[-1])]["values"] if response_dict["object_id"] not in ["", "none", "unknown"] else None
+            retrived_object = eval(retrived_object) if retrived_object != None and type(retrived_object) == str else retrived_object
+
             return {
                 "value": value,
                 "table_name": table_name,
-                "row_number": row_number
+                "row_number": row_number,
+                "tuple" : retrived_object
             }
 
         except:
@@ -43,9 +44,9 @@ class LanguageModel(ABC):
 
         # Method 2: Expected JSON format, with noise around
         try:
-            print("*"*50)
+            # print("*"*50)
             print("METHOD 2 "*3)
-            print(model_response)
+            # print(model_response)
             # Extract the dictionary part of a string from within a larger string
             start = model_response.find("{")
             end = model_response.rfind("}") + 1
@@ -53,19 +54,22 @@ class LanguageModel(ABC):
             value = response_dict["value"]
             table_name = response_dict["table_name"] if response_dict["table_name"].lower().strip() not in ["", "none", "unknown"] else None
             row_number = response_dict["row_number"] if str(response_dict["row_number"]).lower().strip() not in ["", "none", "unknown"] else None
+            retrived_object = retrieved[int(response_dict["object_id"].split(" ")[-1])]["values"] if response_dict["object_id"] not in ["", "none", "unknown"] else None
+            retrived_object = eval(retrived_object) if retrived_object != None and type(retrived_object) == str else retrived_object
             return {
                 "value": value,
                 "table_name": table_name,
-                "row_number": row_number
+                "row_number": row_number,
+                "tuple" : retrived_object
             }
         except:
             pass
 
         # Method 3: Broken JSON format, with/without noise around
         try:
-            print("*"*50)
+            # print("*"*50)
             print("METHOD 3 "*3)
-            print(model_response)
+            # print(model_response)
             # Get value
             try:
                 # find the term "value : " in the response and extract everything after that till the next white space
@@ -84,20 +88,33 @@ class LanguageModel(ABC):
                 table_name_end = model_response.find(" ", table_name_start)
                 table_name = model_response[table_name_start:table_name_end]
                 table_name = table_name if table_name.lower().strip() not in ["", "none", "unknown"] else None
+            except:
+                table_name = None
 
+            try:
                 # find the term "row_number : " in the response and extract everything after that till the next white space
                 row_number_start = model_response.find("row_number : ") + len("row_number : ")
                 row_number_end = model_response.find(" ", row_number_start)
                 row_number = model_response[row_number_start:row_number_end]
                 row_number = row_number if row_number.lower().strip() not in ["", "none", "unknown"] else None
-
             except:
-                table_name, row_number = None, None
+                row_number = None
 
-            return {"value": value, "table_name": table_name, "row_number": row_number}
+            try:
+                # find the term "object_id : " in the response and extract everything after that till the next white space
+                object_id_start = model_response.find("object_id : ") + len("object_id : ")
+                object_id_end = model_response.find(" ", object_id_start)
+                object_id = model_response[object_id_start:object_id_end]
+                retrived_object_index = int(object_id.split(" ")[-1]) if object_id not in ["", "none", "unknown"] else None
+                retrived_object = retrieved[retrived_object_index]["values"] if retrived_object_index != None else None
+            except:
+                retrived_object = None
+                
+
+            return {"value": value, "table_name": table_name, "row_number": row_number, "tuple" : retrived_object}
 
         except:
             pass
 
         # If all above fails
-        return {"value": None, "table_name": None, "row_number": None}
+        return {"value": None, "table_name": None, "row_number": None, "tuple" : None}
