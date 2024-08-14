@@ -74,8 +74,8 @@ export const darkTheme = createTheme({
       dragDrop: {
         borderColor: "#555",
         backgroundColor: {
-          active: "#2c2c2c",
-          inactive: "#141414",
+          active: "#141414",
+          inactive: "#2c2c2c",
         },
       },
       button: {
