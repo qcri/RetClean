@@ -50,7 +50,6 @@ async def create_index(index_name: str) -> dict:
                 },
             },
         )
-        print("created es index")
 
         qdrant_client.recreate_collection(
             collection_name=index_name,
@@ -59,9 +58,9 @@ async def create_index(index_name: str) -> dict:
                 distance=models.Distance.COSINE,
             ),
         )
-        print("created qdrant collection")
 
     except Exception as e:
+        print("ERROR in create_index", e)
         return {"status": "fail", "message": str(e)}
 
     return {"status": "success"}
@@ -100,24 +99,32 @@ async def update_index(index_name: str, files: list[UploadFile]) -> dict:
                 for i, (row_json, embedding) in enumerate(zip(row_jsons, embeddings))
             )
 
-            actions.extend(
-                {
-                    "_op_type": "index",
-                    "_index": index_name,
-                    "_source": {
-                        "values": row_json,
-                        "table_name": csv_file.filename,
-                        "row_number": i,
-                    },
-                }
-                for i, row_json in enumerate(row_jsons)
-            )
+            for i, row_json in enumerate(row_jsons):
+                
+                row_json_as_dict = eval(row_json.replace("null", "None").replace("true", "True").replace("false", "False"))
+                
+                stringified_row_json = ""
+                for key, value in row_json_as_dict.items():
+                    stringified_row_json += str(key) + " : " + str(value) + " , "
+
+                actions.append(
+                    {
+                        "_op_type": "index",
+                        "_index": index_name,
+                        "_source": {
+                            "values": stringified_row_json,
+                            "table_name": csv_file.filename,
+                            "row_number": i,
+                        },
+                    } 
+                )
 
         # Perform bulk operations
         helpers.bulk(es_client, actions)
         qdrant_client.upsert(collection_name=index_name, points=points)
 
     except Exception as e:
+        print("ERROR in update_index", str(e))
         return {"status": "fail", "message": str(e)}
 
     return {"status": "success"}

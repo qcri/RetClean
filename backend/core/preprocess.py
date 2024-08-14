@@ -1,10 +1,6 @@
 def search_preprocess(
     index_type, pivot_names, pivot_row_values, target_name, target_row_value
 ):
-    print("*"*50)
-    print("Made it into search_preprocess")
-    print("Pivot Names: ", pivot_names)
-    print("Pivot Row Values: ", pivot_row_values)
     if index_type == "semantic":
         search_query = {}
         for p, v in zip(pivot_names, pivot_row_values):
@@ -12,11 +8,12 @@ def search_preprocess(
         search_query[target_name] = ""
         search = str(search_query)
     elif index_type == "syntactic":
-        search_query = {}
+        search_query = []
         for p, v in zip(pivot_names, pivot_row_values):
-            search_query[p] = v
-        search_query[target_name] = ""
-        search = str(search_query)
+            search_query.append(p)
+            search_query.append(v)
+        search_query.append(target_name)
+        search = " ".join(search_query)
     return search
 
 
