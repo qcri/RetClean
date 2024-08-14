@@ -94,10 +94,15 @@ async def search_data(
                 # print("Added to List")
 
             if index_type in ["syntactic", "both"]:
+                print("*"*50)
+                print("Made it into Syntactic If")
                 # Format data into appropriate query format for ES
                 search_query = search_preprocess(
                     "syntactic", pivot_names, pvt_row, target_name, tgt
                 )
+                print("*"*50)
+                print("Query Made Succesfully:", search_query)
+
                 search_query_body = {
                     "_source": ["source", "table", "row"],
                     "query": {
@@ -112,6 +117,12 @@ async def search_data(
                     body=search_query_body,
                     size=k,
                 )  # Expected Format: [{"source": str, "table": str, "row": int, "score": float} , {"source": str, "table": str, "row": int, "score": float} , ... ]
+                print("*"*50)
+                print("Got Top-K Direct", len(es_results), es_results)
+
+                print("*"*50)
+                print("Got Top-K Formatted", es_results["hits"]["hits"])
+                
                 search_results.extend(es_results["hits"]["hits"])
 
         except Exception as e:
