@@ -266,7 +266,7 @@ const RepairModule = (props) => {
     for (let i = 0; i < dirtyData.content.length; i++) {
       let rowObj = content[i];
       if (dirtyData.rows.has(i)) {
-        const repairValue = repairs[j]["value"];
+        const repairValue = repairs[j].value;
         rowObj[result.column] = repairValue;
         data.push(repairs[j]);
         if (repairValue !== null) marked.add(i);
@@ -298,9 +298,11 @@ const RepairModule = (props) => {
 
   const onShowEvidence = (index) => {
     let dataObj = result.data[index];
-    let sourceTuple = dataObj["value"];
-    let sourceTableName = dataObj["table_name"];
-    let sourceRowNumber = dataObj["row_number"];
+    // give me a random hardcoded tuple of data
+    let sourceTuple = { age: 25, name: "John Doe", height: 6.0, weight: 180 };
+    // let sourceTuple = dataObj.tuple;
+    let sourceTableName = dataObj.table_name;
+    let sourceRowNumber = dataObj.row_number;
 
     setResult({
       ...result,
@@ -394,7 +396,7 @@ const RepairModule = (props) => {
         flex={10}
         display="flex"
         flexDirection="column"
-        overflow="auto"
+        height="100%"
       >
         {result.isLoading ? (
           <Box
@@ -412,7 +414,7 @@ const RepairModule = (props) => {
           </Box>
         ) : (
           <>
-            <Box id="rightTop" flex={4} display="flex" flexGrow={1}>
+            <Box id="rightTop" flex={4} display="flex" overflow="auto">
               {dirtyData.content === null ? (
                 <DragDropFile onChange={onChangeDirtyDataFile} />
               ) : (
@@ -438,6 +440,7 @@ const RepairModule = (props) => {
             </Box>
             <Box
               id="rightBottom"
+              flex={1}
               borderTop={result.sourceTuple !== null ? 5 : 0}
             >
               {result.sourceTuple !== null && (

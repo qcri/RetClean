@@ -12,41 +12,22 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 const DataTuple = (props) => {
-  const [table, setTable] = useState({
-    columns: [],
-    row: [],
-  });
-
-  const createColumns = (headers) => {
-    const idColumn = { field: "id", headerName: "ID", width: 70 };
-    const otherColumns = headers.map((header) => ({
-      field: header,
-      headerName: header,
-      width: 150,
-    }));
-    const columns = [idColumn, ...otherColumns];
-    return columns;
-  };
+  const [table, setTable] = useState({ columns: [], row: [] });
 
   useEffect(() => {
-    let row = [props.sourceTuple];
-    row[0]["id"] = 1;
-    const headers = Object.keys(props.sourceTuple);
-    const columns = createColumns(headers);
+    const row = [{ id: 1, ...props.sourceTuple }];
+    const idColumn = { field: "id", headerName: "ID" };
+    const otherColumns = Object.keys(props.sourceTuple).map((header) => ({
+      field: header,
+      headerName: header,
+    }));
+    const columns = [idColumn, ...otherColumns];
 
-    setTable({
-      ...table,
-      columns: columns,
-      row: row,
-    });
+    setTable({ ...table, columns: columns, row: row });
   }, [props.sourceTuple]);
 
   return (
-    <Box
-      sx={{
-        height: "100%",
-      }}
-    >
+    <Box>
       <Item elevation={0} sx={{ backgroundColor: "#EDEDED" }}>
         Source: {props.sourceTableName}
       </Item>
@@ -54,15 +35,15 @@ const DataTuple = (props) => {
         Row #: {props.sourceRowNumber}
       </Item>
       <DataGrid
-        rowHeight={63}
-        autoHeight
+        // rowHeight={63}
+        // autoHeight
         rows={table.row}
         columns={table.columns}
         isRowSelectable={() => false}
         columnVisibilityModel={{ id: false }}
         hideFooter
         sx={{
-          fontSize: "0.8rem",
+          fontSize: "1.0 rem",
           ".MuiDataGrid-cell": {
             border: 1,
             borderColor: "#EDEDED",
