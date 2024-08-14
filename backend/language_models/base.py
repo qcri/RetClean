@@ -29,6 +29,10 @@ class LanguageModel(ABC):
             value = response_dict["value"]
             table_name = response_dict["table_name"] if response_dict["table_name"].lower().strip() not in ["", "none", "unknown"] else None
             row_number = response_dict["row_number"] if str(response_dict["row_number"]).lower().strip() not in ["", "none", "unknown"] else None
+            print("*"*50)
+            print("RETRIEVED: ", type(retrieved), retrieved)
+            print(response_dict["object_id"], response_dict["object_id"].split(" ")[-1])
+            print(retrieved[int(response_dict["object_id"].split(" ")[-1])])
             retrived_object = retrieved[int(response_dict["object_id"].split(" ")[-1])]["values"] if response_dict["object_id"] not in ["", "none", "unknown"] else None
             retrived_object = eval(retrived_object) if retrived_object != None and type(retrived_object) == str else retrived_object
 
@@ -39,7 +43,8 @@ class LanguageModel(ABC):
                 "tuple" : retrived_object
             }
 
-        except:
+        except Exception as e:
+            print("Error in Method 1: ", e)
             pass
 
         # Method 2: Expected JSON format, with noise around
@@ -62,7 +67,8 @@ class LanguageModel(ABC):
                 "row_number": row_number,
                 "tuple" : retrived_object
             }
-        except:
+        except Exception as e:
+            print("Error in Method 2: ", e)
             pass
 
         # Method 3: Broken JSON format, with/without noise around

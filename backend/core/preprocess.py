@@ -12,11 +12,12 @@ def search_preprocess(
         search_query[target_name] = ""
         search = str(search_query)
     elif index_type == "syntactic":
-        search_query = {}
+        search_query = []
         for p, v in zip(pivot_names, pivot_row_values):
-            search_query[p] = v
-        search_query[target_name] = ""
-        search = str(search_query)
+            search_query.append(p)
+            search_query.append(v)
+        search_query.append(target_name)
+        search = " ".join(search_query)
     return search
 
 
@@ -27,6 +28,8 @@ def prompt_preprocess(
     
     # If context is provided, the prompt will include it and ask to use it
     if context:
+        print("*"*50)
+        print("CONTEXT: ", type(context) ,context)
         # Make Context String 
         context_str = ", \n".join(
             [

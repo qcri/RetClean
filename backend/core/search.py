@@ -1,11 +1,11 @@
-from core import es_client, qdrant_client, sentence_model
+import re
 from core.preprocess import search_preprocess
+from core import es_client, qdrant_client, sentence_model
 
 NO_RERANK_SINGLE_TOP_K = 3
 NO_RERANK_MULTIPLE_TOP_K = 2
 RERANK_SINGLE_TOP_K = 30
 RERANK_MULTIPLE_TOP_K = 15
-
 
 async def search_data(
     index_name: str,
@@ -17,9 +17,9 @@ async def search_data(
     will_rerank: bool = False,
 ) -> dict:
 
-    print("*"*50)
-    print("target_data: ", target_data)
-    print("pivot_data: ", pivot_data)
+    # print("*"*50)
+    # print("target_data: ", target_data)
+    # print("pivot_data: ", pivot_data)
     ids = [data["id"] for data in target_data]
     target_values = [data["value"] for data in target_data]
     pivot_values = [data["values"] for data in pivot_data]
@@ -31,16 +31,16 @@ async def search_data(
     ):
         return {"status": "fail", "message": "index does not exist"}
 
-    print("*"*50)
-    print("Index Exists")
+    # print("*"*50)
+    # print("Index Exists")
     # Determine the number of top-k results to retrieve based on type of index chosen
     if index_type == "both":
         k = RERANK_MULTIPLE_TOP_K if will_rerank else NO_RERANK_MULTIPLE_TOP_K
     else:
         k = RERANK_SINGLE_TOP_K if will_rerank else NO_RERANK_SINGLE_TOP_K
 
-    print("*"*50)
-    print("K Set")
+    # print("*"*50)
+    # print("K Set")
 
     # Retrieve using chosen index
     results = []
@@ -94,20 +94,20 @@ async def search_data(
                 # print("Added to List")
 
             if index_type in ["syntactic", "both"]:
-                print("*"*50)
-                print("Made it into Syntactic If")
+                # print("*"*50)
+                # print("Made it into Syntactic If")
                 # Format data into appropriate query format for ES
                 search_query = search_preprocess(
                     "syntactic", pivot_names, pvt_row, target_name, tgt
                 )
-                print("*"*50)
-                print("Query Made Succesfully:", search_query)
+                # print("*"*50)
+                # print("Query Made Succesfully:", search_query)
 
                 search_query_body = {
-                    "_source": ["source", "table", "row"],
+                    "_source": ["values", "table_name", "row_number"],
                     "query": {
                         "match": {
-                            "source": {"query": search_query, "fuzziness": "AUTO"}
+                            "values": {"query": search_query, "fuzziness": "AUTO"}
                         }
                     },
                 }
@@ -117,18 +117,33 @@ async def search_data(
                     body=search_query_body,
                     size=k,
                 )  # Expected Format: [{"source": str, "table": str, "row": int, "score": float} , {"source": str, "table": str, "row": int, "score": float} , ... ]
-                print("*"*50)
-                print("Got Top-K Direct", len(es_results), es_results)
+                # print("*"*50)
+                # print("Got Top-K Direct", len(es_results), es_results)
+
+                # print("*"*50)
+                # print("Got Top-K Formatted", es_results["hits"]["hits"])
 
                 print("*"*50)
-                print("Got Top-K Formatted", es_results["hits"]["hits"])
+                print("RESULTS:", es_results["hits"]["hits"])
+                print("PARSED RESULTS:", [x1["_source"] for x1 in es_results["hits"]["hits"]])
+                search_results = [x1["_source"] for x1 in es_results["hits"]["hits"]] 
+                search_results = [{**x1["_source"], "values": format_string_for_eval("{ " + x1["_source"]["values"].strip()[:-2] + " }").replace(" '", "'")} for x1 in es_results["hits"]["hits"]]
                 
-                search_results.extend(es_results["hits"]["hits"])
-
         except Exception as e:
             return {"status": "fail", "message": str(e)}
-
+        
         results.append(search_results)
 
     # results is 2D list where for each target value, we have a list of top-k results
     return {"status": "success", "results": results}
+
+
+# Helper Function to format the values attribute for ES returned results
+def format_string_for_eval(s):
+    # Add quotes around keys
+    s = re.sub(r'(\w+)\s*:', r"'\1':", s)
+    # Add quotes around all values
+    s = re.sub(r':\s*([^,}]+)', r": '\1'", s)
+    # Handle None values
+    s = s.replace(": 'None'", ": None")
+    return s
