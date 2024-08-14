@@ -26,18 +26,9 @@ async def prompt_with_data(
 
     # Get the result for each target value
     results = []
-    c = 0
     for target_row_value, pivot_row_values, retrieved in zip(
         target_values, pivot_values, retrieved_list
     ):
-        if c == 0:
-            print("*"*50)
-            print("Target Name: ", target_name)
-            print("Target Row Value: ", target_row_value)
-            print("Pivot Row Values: ", pivot_row_values)
-            print("Pivot Names: ", pivot_names)
-            print("Retrieved: ", retrieved)
-            c += 1
         # Create prompt using context
         prompt = prompt_preprocess(
             description,

@@ -1,10 +1,6 @@
 def search_preprocess(
     index_type, pivot_names, pivot_row_values, target_name, target_row_value
 ):
-    print("*"*50)
-    print("Made it into search_preprocess")
-    print("Pivot Names: ", pivot_names)
-    print("Pivot Row Values: ", pivot_row_values)
     if index_type == "semantic":
         search_query = {}
         for p, v in zip(pivot_names, pivot_row_values):
@@ -28,8 +24,6 @@ def prompt_preprocess(
     
     # If context is provided, the prompt will include it and ask to use it
     if context:
-        print("*"*50)
-        print("CONTEXT: ", type(context) ,context)
         # Make Context String 
         context_str = ", \n".join(
             [

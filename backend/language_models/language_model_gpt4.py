@@ -26,8 +26,6 @@ class GPT4Repairer(LanguageModel):
 
     def prompt_wrapper(self, text: str) -> str:
         # Create the messages object for the GPT-4 model
-        print("*"*50)
-        print("Prompt Wrapper: ", text)
         messages = [
             {
                 "role": "system",
@@ -48,6 +46,4 @@ class GPT4Repairer(LanguageModel):
             messages=text,
             temperature=0.25,
         )
-        print("*"*50)
-        print("Generate: ", response.choices[0]["message"]["content"])
         return self.extract_value_citation(response.choices[0]["message"]["content"], retrieved)

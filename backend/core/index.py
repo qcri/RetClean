@@ -31,19 +31,11 @@ async def get_indexes() -> dict:
 
 
 async def create_index(index_name: str) -> dict:
-
-    # print("*"*50)
-    # print("inside create_index")
-    # print("index_name", index_name)
-    # print(es_client.indices.exists(index=index_name))
-    # print(qdrant_client.collection_exists(collection_name=index_name))
     if es_client.indices.exists(index=index_name) or qdrant_client.collection_exists(
         collection_name=index_name
     ):
         return {"status": "fail", "message": "index already exists"}
 
-    # print("*"*50)
-    # print("creating ES & QDRANT index ")
     try:
         es_client.create(
             id=index_name,
@@ -58,8 +50,6 @@ async def create_index(index_name: str) -> dict:
                 },
             },
         )
-        # print("*"*50)
-        # print("created es index")
 
         qdrant_client.recreate_collection(
             collection_name=index_name,
@@ -68,8 +58,6 @@ async def create_index(index_name: str) -> dict:
                 distance=models.Distance.COSINE,
             ),
         )
-        # print("*"*50)
-        # print("created qdrant collection")
 
     except Exception as e:
         print("ERROR in create_index", e)
@@ -85,8 +73,6 @@ async def update_index(index_name: str, files: list[UploadFile]) -> dict:
     ):
         return {"status": "fail", "message": "index does not exist"}
 
-    # print("*"*50)
-    # print("inside update_index")
     try:
         points = []
         actions = []
@@ -114,9 +100,8 @@ async def update_index(index_name: str, files: list[UploadFile]) -> dict:
             )
 
             for i, row_json in enumerate(row_jsons):
-                # print("row_json", type(row_json), row_json)
+                
                 row_json_as_dict = eval(row_json.replace("null", "None").replace("true", "True").replace("false", "False"))
-                # print("row_json_as_dict", type(row_json_as_dict), row_json_as_dict) 
                 
                 stringified_row_json = ""
                 for key, value in row_json_as_dict.items():
@@ -127,7 +112,6 @@ async def update_index(index_name: str, files: list[UploadFile]) -> dict:
                         "_op_type": "index",
                         "_index": index_name,
                         "_source": {
-                            # "values": row_json,
                             "values": stringified_row_json,
                             "table_name": csv_file.filename,
                             "row_number": i,
@@ -135,15 +119,9 @@ async def update_index(index_name: str, files: list[UploadFile]) -> dict:
                     } 
                 )
 
-        # print("*"*50)
-        # print("FINISHED STRINGIFYING ALL CSV ROWS")     
         # Perform bulk operations
         helpers.bulk(es_client, actions)
-        # print("*"*50)
-        # print("UPDATED ES")
         qdrant_client.upsert(collection_name=index_name, points=points)
-        # print("*"*50)
-        # print("UPDATED QDRANT")
 
     except Exception as e:
         print("ERROR in update_index", str(e))

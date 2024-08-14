@@ -71,7 +71,6 @@ const ResultCell = ({ params, props }) => {
             <Button
               startIcon={<InfoIcon />}
               onClick={(e) => props.onShowEvidence(params.id)}
-              // onClick={(e) => console.log(params.id)}
               ></Button>
           )}
         </Box>
