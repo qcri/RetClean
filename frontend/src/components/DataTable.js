@@ -15,25 +15,35 @@ import {
   GridToolbarExport,
 } from "@mui/x-data-grid";
 import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrowDown";
+import NotInterestedIcon from "@mui/icons-material/NotInterested";
 import InfoIcon from "@mui/icons-material/Info";
 
 const CustomToolbar = (props) => {
   return (
     <GridToolbarContainer>
-      {/* <GridToolbarFilterButton /> */}
       <ButtonGroup
         disableElevation
-        variant="text"
+        // variant="text"
+        variant="contained"
         size="large"
-        sx={{ my: "0.2rem", height: "3rem" }}
+        sx={{ mb: "4px", height: "3rem" }}
       >
-        <GridToolbarExport sx={{ fontSize: "1rem" }} />
+        <GridToolbarFilterButton />
+        <GridToolbarExport />
         {props.result.data.length !== 0 && (
           <Button
             startIcon={<KeyboardDoubleArrowDownIcon />}
             onClick={props.onApplyRepairs}
           >
             Apply Repairs
+          </Button>
+        )}
+        {props.result.data.length !== 0 && (
+          <Button
+            startIcon={<NotInterestedIcon />}
+            onClick={props.onCancelRepairs}
+          >
+            Cancel
           </Button>
         )}
       </ButtonGroup>
@@ -81,24 +91,31 @@ const DataTable = (props) => {
 
   useEffect(() => {
     if (props.isDirtyDataUploaded) {
-      const idColumn = [
-        "id",
-        {
-          field: "id",
-          headerName: "ID",
-          width: 70,
-          headerClassName: "normal--header",
-        },
-      ];
+      const data = props.dirtyDataContent;
+
+      const idColumn = {
+        field: "id",
+        headerName: "ID",
+        headerClassName: "normal--header",
+      };
+
       const otherColumns = props.columns.map((header) => {
-        let column = {
+        const minWidth = 100;
+        const contentWidth = Math.max(
+          ...data.map((row) => row[header]?.toString().length * 10),
+          header.length * 10
+        );
+        const width = Math.max(contentWidth, minWidth);
+        const headerName =
+          header === props.result.column
+            ? `Repairs for: ${props.dirtyColumn}`
+            : header;
+
+        return {
           field: header,
-          headerName:
-            header === props.result.column
-              ? `Repairs for: ${props.dirtyColumn}`
-              : header,
-          width: 150,
+          headerName: headerName,
           editable: true,
+          width: width,
           headerClassName:
             header === props.result.column
               ? "result--header"
@@ -107,29 +124,23 @@ const DataTable = (props) => {
               : props.pivotColumns.has(header)
               ? "pivot--header"
               : "normal--header",
+          ...(header === props.result.column && {
+            cellClassName: "result--cell",
+            renderCell: (params) => <ResultCell {...{ params, props }} />,
+          }),
         };
-        return [
-          header,
-          {
-            ...column,
-            ...(header === props.result.column
-              ? {
-                  cellClassName: "result--cell",
-                  renderCell: (params) => <ResultCell {...{ params, props }} />,
-                }
-              : {}),
-          },
-        ];
       });
 
-      const columns = Object.fromEntries([idColumn, ...otherColumns]);
-      const rows = [...Array(props.dirtyDataContent.length).keys()].map(
-        (i) => ({ id: i, ...props.dirtyDataContent[i] })
-      );
+      const columns = [idColumn, ...otherColumns];
 
-      setTable({ ...table, columns: columns, rows: rows });
+      const rows = props.dirtyDataContent.map((data, i) => ({
+        id: i,
+        ...data,
+      }));
+
+      setTable({ ...table, columns, rows });
     }
-  }, [props.dirtyDataContent, props.result]);
+  }, [props.dirtyDataContent, props.result, props.isDirtyDataUploaded]);
 
   useEffect(() => {
     if (props.isDirtyDataUploaded) {
@@ -144,10 +155,7 @@ const DataTable = (props) => {
           : (columns[column]["headerClassName"] = "normal--header");
       }
 
-      setTable({
-        ...table,
-        columns: columns,
-      });
+      setTable({ ...table, columns: columns });
     }
   }, [props.dirtyColumn, props.pivotColumns]);
 
@@ -159,6 +167,7 @@ const DataTable = (props) => {
       onRowSelectionModelChange={(ids) => console.log(ids)}
       isRowSelectable={() => false}
       CustomToolbar={CustomToolbar}
+      autosizeOptions={{ includeHeaders: false }}
       slots={{ toolbar: () => CustomToolbar(props) }}
       sx={{
         fontSize: "1.0 rem",

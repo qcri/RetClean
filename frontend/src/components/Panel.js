@@ -180,7 +180,8 @@ const Panel = (props) => {
             disabled={
               !props.isDirtyDataUploaded ||
               props.dirtyColumn === "" ||
-              props.reasonerName == ""
+              props.reasonerName == "" ||
+              props.isLoading
             }
             disableElevation
             size="large"
@@ -189,7 +190,7 @@ const Panel = (props) => {
             onClick={props.onRunJob}
             sx={{ width: "6rem", height: "3rem" }}
           >
-            {props.load ? <CircularProgress /> : "Start"}
+            {props.isLoading ? <CircularProgress /> : "Start"}
           </Button>
         </ThemeProvider>
       </Grid>
