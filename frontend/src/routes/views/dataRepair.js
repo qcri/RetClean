@@ -353,7 +353,7 @@ const RepairModule = (props) => {
     >
       <Box
         id="left"
-        flex={3}
+        width="20%"
         display="flex"
         borderRight={5}
         borderColor={borderColor}
@@ -389,7 +389,7 @@ const RepairModule = (props) => {
           onRunJob={onRunJob}
         />
       </Box>
-      <Box id="right" flex={10} display="flex" flexDirection="column">
+      <Box id="right" width="80%" display="flex" flexDirection="column">
         {dirtyData.content === null ? (
           <Box padding="2%" height="100%">
             <DragDropFile onChange={onChangeDirtyDataFile} />
@@ -410,29 +410,28 @@ const RepairModule = (props) => {
           </Box>
         ) : (
           <>
-            <Box id="rightTop" flex={4} overflow="auto">
-              <Box>
-                <DataTable
-                  dirtyDataContent={dirtyData.content}
-                  columns={
-                    result.data.length === 0
-                      ? dirtyData.columns
-                      : [...dirtyData.columns, result.column]
-                  }
-                  onChangeDirtyDataFile={onChangeDirtyDataFile}
-                  isDirtyDataUploaded={dirtyData.content !== null}
-                  dirtyColumn={configuration.dirtyColumn}
-                  pivotColumns={configuration.pivotColumns}
-                  isIndexSelected={configuration.searchIndexName !== ""}
-                  result={result}
-                  onMarkResult={onMarkResult}
-                  onShowEvidence={onShowEvidence}
-                  onApplyRepairs={onApplyRepairs}
-                  onCancelRepairs={onCancelRepairs}
-                />
-              </Box>
+            <Box id="rightTop" height="80%">
+              <DataTable
+                dirtyDataContent={dirtyData.content}
+                columns={
+                  result.data.length === 0
+                    ? dirtyData.columns
+                    : [...dirtyData.columns, result.column]
+                }
+                onChangeDirtyDataFile={onChangeDirtyDataFile}
+                isDirtyDataUploaded={dirtyData.content !== null}
+                dirtyColumn={configuration.dirtyColumn}
+                pivotColumns={configuration.pivotColumns}
+                isIndexSelected={configuration.searchIndexName !== ""}
+                result={result}
+                onMarkResult={onMarkResult}
+                onShowEvidence={onShowEvidence}
+                onApplyRepairs={onApplyRepairs}
+                onCancelRepairs={onCancelRepairs}
+              />
             </Box>
-            <Box id="rightBottom" flex={1}>
+
+            <Box id="rightBottom" height="20%">
               {result.sourceTuple !== null && (
                 <Evidence
                   sourceTuple={result.sourceTuple}
