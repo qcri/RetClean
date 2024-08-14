@@ -26,7 +26,6 @@ const RepairModule = (props) => {
     content: null,
     columns: [],
     rows: new Set(),
-    isLoading: false,
   });
 
   const [configuration, setConfiguration] = useState({
@@ -255,9 +254,9 @@ const RepairModule = (props) => {
       reranker_type: rerankerType,
     };
 
-    setDirtyData({ ...dirtyData, isLoading: true });
+    setResult({ ...result, isLoading: true });
     const response = await getRepairs(requestObj);
-    setDirtyData({ ...dirtyData, isLoading: false });
+    setResult({ ...result, isLoading: false });
     const repairs = response.results;
 
     let marked = new Set();
@@ -333,6 +332,17 @@ const RepairModule = (props) => {
     }
   };
 
+  const onCancelRepairs = () => {
+    setResult({
+      ...result,
+      data: [],
+      marked: new Set(),
+      sourceTuple: null,
+      sourceTableName: null,
+      sourceRowNumber: null,
+    });
+  };
+
   return (
     <Box
       display="flex"
@@ -375,7 +385,7 @@ const RepairModule = (props) => {
           onChangeIndexType={onChangeIndexType}
           rerankState={configuration.rerankState}
           onChangeRerankType={onChangeRerankType}
-          load={result.load}
+          isLoading={result.isLoading}
           onRunJob={onRunJob}
         />
       </Box>
@@ -386,7 +396,7 @@ const RepairModule = (props) => {
         flexDirection="column"
         overflow="auto"
       >
-        {dirtyData.isLoading ? (
+        {result.isLoading ? (
           <Box
             id="rightTopLoading"
             display="flex"
@@ -422,6 +432,7 @@ const RepairModule = (props) => {
                   onMarkResult={onMarkResult}
                   onShowEvidence={onShowEvidence}
                   onApplyRepairs={onApplyRepairs}
+                  onCancelRepairs={onCancelRepairs}
                 />
               )}
             </Box>
