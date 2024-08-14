@@ -66,12 +66,12 @@ const LabeledDivider = (props) => {
   );
 };
 
-const DirtyDataFileInput = ComponentGridWithName("Data", FileInput);
+const DirtyDataFileInput = ComponentGridWithName("Corrupt Data", FileInput);
 const EntityDescriptionTextField = ComponentGridWithName(
   "Entity Description",
   TextField
 );
-const DirtyColumnSelect = ComponentGridWithName("Dirty Column", CustomSelect);
+const DirtyColumnSelect = ComponentGridWithName("Target Column", CustomSelect);
 const RepairOptionRadioButtons = ComponentGridWithName(
   "Repair Values",
   RadioButtonRegex

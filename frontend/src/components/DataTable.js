@@ -86,12 +86,12 @@ const DataTable = (props) => {
   const headerBackgroundColor =
     theme.palette.custom.table.headers.backgroundColor;
   const tableBorderColor = theme.palette.custom.table.border.main;
-  const [table, setTable] = useState({ columns: {}, rows: [] });
+  const [table, setTable] = useState({ columns: [], rows: [] });
 
   useEffect(() => {
     if (props.isDirtyDataUploaded) {
       const data = props.dirtyDataContent;
-
+      const rows = data.map((data, i) => ({ id: i, ...data }));
       const idColumn = {
         field: "id",
         headerName: "ID",
@@ -99,12 +99,13 @@ const DataTable = (props) => {
       };
 
       const otherColumns = props.columns.map((header) => {
-        const minWidth = 150;
+        const minWidth = 100;
+        const factor = header === props.result.column ? 1.5 : 1;
         const contentWidth = Math.max(
           ...data.map((row) => row[header]?.toString().length * 10),
           header.length * 10
         );
-        const width = Math.max(contentWidth, minWidth);
+        const width = factor * Math.max(contentWidth, minWidth);
         const headerName =
           header === props.result.column
             ? `Repairs for: ${props.dirtyColumn}`
@@ -132,40 +133,35 @@ const DataTable = (props) => {
 
       const columns = [idColumn, ...otherColumns];
 
-      const rows = props.dirtyDataContent.map((data, i) => ({
-        id: i,
-        ...data,
-      }));
-
-      setTable({ ...table, columns, rows });
+      setTable({ ...table, columns: columns, rows: rows });
     }
   }, [props.dirtyDataContent, props.result, props.isDirtyDataUploaded]);
 
   useEffect(() => {
     if (props.isDirtyDataUploaded) {
-      let columns = { ...table.columns };
-      for (const column in table.columns) {
-        column === props.result.column
-          ? (columns[column]["headerClassName"] = "result--header")
-          : props.pivotColumns.has(column) && column !== props.dirtyColumn
-          ? (columns[column]["headerClassName"] = "pivot--header")
-          : column === props.dirtyColumn
-          ? (columns[props.dirtyColumn]["headerClassName"] = "dirty--header")
-          : (columns[column]["headerClassName"] = "normal--header");
-      }
+      let columns = [...table.columns];
+      columns.forEach((col, index) => {
+        if (col === props.result.column) {
+          columns[index]["headerClassName"] = "result--header";
+        } else if (props.pivotColumns.has(col) && col !== props.dirtyColumn) {
+          columns[index]["headerClassName"] = "pivot--header";
+        } else if (col === props.dirtyColumn) {
+          columns[index]["headerClassName"] = "dirty--header";
+        } else {
+          columns[index]["headerClassName"] = "normal--header";
+        }
+      });
 
       setTable({ ...table, columns: columns });
     }
-  }, [props.dirtyColumn, props.pivotColumns]);
+  }, [props.dirtyColumn, props.pivotColumns, props.isDirtyDataUploaded]);
 
   return (
     <DataGrid
       rows={table.rows}
-      columns={Object.values(table.columns)}
-      onRowSelectionModelChange={(ids) => console.log(ids)}
+      columns={table.columns}
       isRowSelectable={() => false}
       CustomToolbar={CustomToolbar}
-      autosizeOptions={{ includeHeaders: false }}
       slots={{ toolbar: () => CustomToolbar(props) }}
       sx={{
         fontSize: "1.0 rem",
