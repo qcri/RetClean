@@ -50,4 +50,6 @@ async def repair_data(
         results = prompt_results["results"]
 
     # Return final results to frontend
+    print("*"*50)
+    print("FINAL RETURNED RESULTS: ", results)
     return {"status": "success", "results": results}

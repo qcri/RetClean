@@ -21,10 +21,17 @@ class LanguageModel(ABC):
 
         # Method 1: Expected JSON format, no noise
         try:
+            print("*"*50)
+            print("METHOD 1 "*3)
+            print(model_response)
             response_dict = eval(model_response)
+            print("response_dict", response_dict)
             value = response_dict["value"]
+            print("value", value)
             table_name = response_dict["table_name"] if response_dict["table_name"].lower().strip() not in ["", "none", "unknown"] else None
-            row_number = response_dict["row_number"] if response_dict["row_number"].lower().strip() not in ["", "none", "unknown"] else None
+            print("table_name", response_dict["table_name"])
+            row_number = response_dict["row_number"] if str(response_dict["row_number"]).lower().strip() not in ["", "none", "unknown"] else None
+            print("row_number", response_dict["row_number"])
             return {
                 "value": value,
                 "table_name": table_name,
@@ -36,13 +43,16 @@ class LanguageModel(ABC):
 
         # Method 2: Expected JSON format, with noise around
         try:
+            print("*"*50)
+            print("METHOD 2 "*3)
+            print(model_response)
             # Extract the dictionary part of a string from within a larger string
             start = model_response.find("{")
             end = model_response.rfind("}") + 1
             response_dict = eval(model_response[start:end])
             value = response_dict["value"]
             table_name = response_dict["table_name"] if response_dict["table_name"].lower().strip() not in ["", "none", "unknown"] else None
-            row_number = response_dict["row_number"] if response_dict["row_number"].lower().strip() not in ["", "none", "unknown"] else None
+            row_number = response_dict["row_number"] if str(response_dict["row_number"]).lower().strip() not in ["", "none", "unknown"] else None
             return {
                 "value": value,
                 "table_name": table_name,
@@ -53,6 +63,9 @@ class LanguageModel(ABC):
 
         # Method 3: Broken JSON format, with/without noise around
         try:
+            print("*"*50)
+            print("METHOD 3 "*3)
+            print(model_response)
             # Get value
             try:
                 # find the term "value : " in the response and extract everything after that till the next white space
