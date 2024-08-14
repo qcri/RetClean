@@ -1,17 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { styled } from "@mui/material/styles";
-import { Box, Paper } from "@mui/material";
+import { Box, Paper, Typography, useTheme } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 
-const Item = styled(Paper)(({ theme }) => ({
-  elevation: 0,
-  padding: theme.spacing(1),
-  fontFamily: "League Spartan",
-  fontSize: "1rem",
-  textAlign: "left",
-}));
-
 const DataTuple = (props) => {
+  const theme = useTheme();
+  const backgroundColor = theme.palette.background.paper;
   const [table, setTable] = useState({ columns: [], row: [] });
 
   useEffect(() => {
@@ -27,16 +20,18 @@ const DataTuple = (props) => {
   }, [props.sourceTuple]);
 
   return (
-    <Box>
-      <Item elevation={0} sx={{ backgroundColor: "#EDEDED" }}>
-        Source: {props.sourceTableName}
-      </Item>
-      <Item elevation={0} sx={{ backgroundColor: "#EDEDED" }}>
-        Row #: {props.sourceRowNumber}
-      </Item>
+    <Box weight="100%">
+      <Paper sx={{ paddingLeft: "5px", backgroundColor: backgroundColor }}>
+        <Typography fontSize="1.3rem">
+          <span style={{ fontWeight: "bold" }}>Table Source: </span>
+          {props.sourceTableName}
+        </Typography>
+        <Typography fontSize="1.3rem">
+          <span style={{ fontWeight: "bold" }}>Row Number: </span>
+          {props.sourceRowNumber}
+        </Typography>
+      </Paper>
       <DataGrid
-        // rowHeight={63}
-        // autoHeight
         rows={table.row}
         columns={table.columns}
         isRowSelectable={() => false}

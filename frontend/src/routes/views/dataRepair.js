@@ -298,9 +298,7 @@ const RepairModule = (props) => {
 
   const onShowEvidence = (index) => {
     let dataObj = result.data[index];
-    // give me a random hardcoded tuple of data
-    let sourceTuple = { age: 25, name: "John Doe", height: 6.0, weight: 180 };
-    // let sourceTuple = dataObj.tuple;
+    let sourceTuple = dataObj.tuple;
     let sourceTableName = dataObj.table_name;
     let sourceRowNumber = dataObj.row_number;
 
@@ -391,20 +389,18 @@ const RepairModule = (props) => {
           onRunJob={onRunJob}
         />
       </Box>
-      <Box
-        id="right"
-        flex={10}
-        display="flex"
-        flexDirection="column"
-        height="100%"
-      >
-        {result.isLoading ? (
+      <Box id="right" flex={10} display="flex" flexDirection="column">
+        {dirtyData.content === null ? (
+          <Box padding="2%" height="100%">
+            <DragDropFile onChange={onChangeDirtyDataFile} />
+          </Box>
+        ) : result.isLoading ? (
           <Box
-            id="rightTopLoading"
             display="flex"
+            flexDirection="column"
             justifyContent="center"
             alignItems="center"
-            flexGrow={1}
+            height="100%"
           >
             <Mosaic
               color={["#33CCCC", "#33CC36", "#B8CC33", "#FCCA00"]}
@@ -414,10 +410,8 @@ const RepairModule = (props) => {
           </Box>
         ) : (
           <>
-            <Box id="rightTop" flex={4} display="flex" overflow="auto">
-              {dirtyData.content === null ? (
-                <DragDropFile onChange={onChangeDirtyDataFile} />
-              ) : (
+            <Box id="rightTop" flex={4} overflow="auto">
+              <Box>
                 <DataTable
                   dirtyDataContent={dirtyData.content}
                   columns={
@@ -436,13 +430,9 @@ const RepairModule = (props) => {
                   onApplyRepairs={onApplyRepairs}
                   onCancelRepairs={onCancelRepairs}
                 />
-              )}
+              </Box>
             </Box>
-            <Box
-              id="rightBottom"
-              flex={1}
-              borderTop={result.sourceTuple !== null ? 5 : 0}
-            >
+            <Box id="rightBottom" flex={1}>
               {result.sourceTuple !== null && (
                 <Evidence
                   sourceTuple={result.sourceTuple}

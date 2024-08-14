@@ -99,7 +99,7 @@ const DataTable = (props) => {
       };
 
       const otherColumns = props.columns.map((header) => {
-        const minWidth = 100;
+        const minWidth = 150;
         const contentWidth = Math.max(
           ...data.map((row) => row[header]?.toString().length * 10),
           header.length * 10
@@ -160,7 +160,6 @@ const DataTable = (props) => {
 
   return (
     <DataGrid
-      // height="100%"
       rows={table.rows}
       columns={Object.values(table.columns)}
       onRowSelectionModelChange={(ids) => console.log(ids)}

@@ -11,7 +11,13 @@ export const MainPage = (props) => {
   const [indexList, setIndexList] = useState([]);
 
   return (
-    <Box id="outer" display="flex" flexDirection="column" height="100vh">
+    <Box
+      id="outer"
+      display="flex"
+      flexDirection="column"
+      height="100vh"
+      width="100vw"
+    >
       <Box id="header">
         <Header
           isRepairView={isRepairView}

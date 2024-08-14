@@ -94,13 +94,13 @@ const RerankerOptionButtonGroup = ComponentGridWithName(
 const Panel = (props) => {
   const theme = useTheme();
   const backgroundColor = theme.palette.background.paper;
-  const borderColor = theme.palette.border.main;
   return (
     <Box
       display="flex"
-      width="100%"
       flexDirection="column"
       justifyContent="space-between"
+      height="100%"
+      width="100%"
       padding={2}
       bgcolor={backgroundColor}
     >
