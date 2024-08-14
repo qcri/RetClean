@@ -23,7 +23,6 @@ const CustomToolbar = (props) => {
     <GridToolbarContainer>
       <ButtonGroup
         disableElevation
-        // variant="text"
         variant="contained"
         size="large"
         sx={{ mb: "4px", height: "3rem" }}
