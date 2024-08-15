@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   DataGrid,
   GridToolbarContainer,
   GridToolbarFilterButton,
   GridToolbarExport,
+  useGridApiRef,
 } from "@mui/x-data-grid";
 import {
   Box,
@@ -81,8 +82,9 @@ const DataTable = (props) => {
     theme.palette.custom.table.headers.backgroundColor;
   const tableBorderColor = theme.palette.custom.table.border.main;
   const [table, setTable] = useState({ columns: [], rows: [] });
+  const apiRef = useGridApiRef(); // Add apiRef for DataGrid
+  const [resultColumnAdded, setResultColumnAdded] = useState(false);
 
-  // Initial setup of columns and rows when data is uploaded
   useEffect(() => {
     if (props.isDirtyDataUploaded) {
       const rows = props.dirtyDataContent.map((data, i) => ({
@@ -104,7 +106,7 @@ const DataTable = (props) => {
           ),
           header.length * 10
         ),
-        headerClassName: getHeaderClass(header, props), // Use the function to set header class
+        headerClassName: getHeaderClass(header, props),
         ...(header === props.resultColumn && {
           cellClassName: "result--cell",
           renderCell: (params) => (
@@ -119,6 +121,14 @@ const DataTable = (props) => {
         }),
       }));
 
+      // Check if the result column is added for the first time
+      if (
+        !table.columns.some((col) => col.field === props.resultColumn) &&
+        props.columns.includes(props.resultColumn)
+      ) {
+        setResultColumnAdded(true);
+      }
+
       setTable({ columns: [idColumn, ...updatedColumns], rows });
     }
   }, [
@@ -132,7 +142,21 @@ const DataTable = (props) => {
     props.resultColumn,
   ]);
 
-  // Helper function to determine the header class based on conditions
+  // Scroll to the right when the resultColumn is added for the first time
+  useEffect(() => {
+    console.log(table.columns.length - 1);
+    console.log(resultColumnAdded);
+    if (resultColumnAdded) {
+      setTimeout(() => {
+        apiRef.current.scrollToIndexes({
+          rowIndex: 0,
+          colIndex: table.columns.length - 1,
+        });
+      }, 0);
+      setResultColumnAdded(false);
+    }
+  }, [resultColumnAdded, table.columns.length, apiRef]);
+
   const getHeaderClass = (header, props) => {
     if (header === props.resultColumn) return "result--header";
     if (header === props.dirtyColumn && header !== props.resultColumn)
@@ -140,7 +164,7 @@ const DataTable = (props) => {
     if (
       props.pivotColumns.has(header) &&
       header !== props.resultColumn &&
-      header != props.dirtyColumn
+      header !== props.dirtyColumn
     )
       return "pivot--header";
     return "normal--header";
@@ -148,6 +172,7 @@ const DataTable = (props) => {
 
   return (
     <DataGrid
+      apiRef={apiRef} // Attach the apiRef to the DataGrid
       rows={table.rows}
       columns={table.columns}
       isRowSelectable={() => false}
