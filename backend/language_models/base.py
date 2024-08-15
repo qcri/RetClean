@@ -16,17 +16,39 @@ class LanguageModel(ABC):
     def generate(self, text: str, retrieved: list) -> str:
         pass
 
+    def stringified_dict_to_dict(self, s: str) -> dict:
+        # Convert a stringified dictionary to a dictionary
+        try:
+            return eval(s)
+        except:
+            s = s.replace("{", "").replace("}", "").replace("'", "").replace('"', "")
+            ret = {}
+            key_val_pairs = s.split(",")
+            for pair in key_val_pairs:
+                key, val = pair.split(":")
+                ret[key.strip()] = val.strip()
+            return ret
+        
     def extract_value_citation(self, model_response: str, retrieved: list) -> str:
         # Parse model output and return
 
         # Method 1: Expected JSON format, no noise
         try:
-            response_dict = eval(model_response)
+            # print("*"*50)
+            # print("METHOD 1 MODEL RESPONSE: ", model_response)
+            response_dict = {k:str(v) for k,v in eval(model_response).items()}
+            # print("RESPONSE DICT: ", response_dict)
             value = response_dict["value"]
+            # print("VALUE: ", value)
             table_name = response_dict["table_name"] if response_dict["table_name"].lower().strip() not in ["", "none", "unknown"] else None
+            # print("TABLE NAME: ", table_name)
             row_number = response_dict["row_number"] if str(response_dict["row_number"]).lower().strip() not in ["", "none", "unknown"] else None
+            # print("ROW NUMBER: ", row_number)
+            # print("RETRIEVED: ", retrieved)
             retrived_object = retrieved[int(response_dict["object_id"].split(" ")[-1])]["values"] if response_dict["object_id"] not in ["", "none", "unknown"] else None
-            retrived_object = eval(retrived_object) if retrived_object != None and type(retrived_object) == str else retrived_object
+            # print("RETRIVED OBJECT: ", retrived_object)
+            retrived_object = self.stringified_dict_to_dict(retrived_object) if retrived_object != None and type(retrived_object) == str else retrived_object
+
 
             return {
                 "value": value,
@@ -48,7 +70,7 @@ class LanguageModel(ABC):
             table_name = response_dict["table_name"] if response_dict["table_name"].lower().strip() not in ["", "none", "unknown"] else None
             row_number = response_dict["row_number"] if str(response_dict["row_number"]).lower().strip() not in ["", "none", "unknown"] else None
             retrived_object = retrieved[int(response_dict["object_id"].split(" ")[-1])]["values"] if response_dict["object_id"] not in ["", "none", "unknown"] else None
-            retrived_object = eval(retrived_object) if retrived_object != None and type(retrived_object) == str else retrived_object
+            retrived_object = self.stringified_dict_to_dict(retrived_object) if retrived_object != None and type(retrived_object) == str else retrived_object
             return {
                 "value": value,
                 "table_name": table_name,
@@ -108,3 +130,5 @@ class LanguageModel(ABC):
 
         # If all above fails
         return {"value": None, "table_name": None, "row_number": None, "tuple" : None}
+
+    
