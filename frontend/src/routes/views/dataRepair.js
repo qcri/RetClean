@@ -18,6 +18,8 @@ const RepairModule = (props) => {
   const borderColor = theme.palette.border.main;
   const repairOptionDefaultStrings = { Any: "*", Null: "NULL", Custom: "" };
 
+  const resultColumn = "RetClean Results";
+
   // States
   const [reasonersList, setReasonersList] = useState([]);
 
@@ -28,8 +30,9 @@ const RepairModule = (props) => {
     rows: new Set(),
   });
 
+  const [entityDescription, setEntityDescription] = useState("");
+
   const [configuration, setConfiguration] = useState({
-    entityDescription: "",
     dirtyColumn: "",
     repairOptionState: { Any: true, Null: false, Custom: false },
     repairString: "*",
@@ -41,7 +44,6 @@ const RepairModule = (props) => {
   });
 
   const [result, setResult] = useState({
-    column: "RetClean Results",
     data: [],
     marked: new Set(),
     isLoading: false,
@@ -108,7 +110,6 @@ const RepairModule = (props) => {
     });
     setConfiguration({
       ...configuration,
-      entityDescription: "",
       dirtyColumn: "",
       repairOptionState: { Any: true, Null: false, Custom: false },
       repairString: "*",
@@ -124,18 +125,10 @@ const RepairModule = (props) => {
     });
   };
 
-  const onChangeEntityDescription = (value) => {
-    setConfiguration({
-      ...configuration,
-      entityDescription: value,
-    });
-  };
+  const onChangeEntityDescription = (value) => setEntityDescription(value);
 
   const onSelectDirtyColumn = (value) => {
-    setConfiguration({
-      ...configuration,
-      dirtyColumn: value,
-    });
+    setConfiguration({ ...configuration, dirtyColumn: value });
   };
 
   const onChangeRepairOption = (value) => {
@@ -204,11 +197,6 @@ const RepairModule = (props) => {
   const onRunJob = async () => {
     setResult({ ...result, isLoading: true });
 
-    const entityDescription =
-      configuration.entityDescription !== ""
-        ? configuration.entityDescription
-        : null;
-
     const { dirtyColumData, pivotColumData } = prepareData(
       dirtyData.content,
       dirtyData.rows,
@@ -243,7 +231,7 @@ const RepairModule = (props) => {
     }
 
     const requestObj = {
-      entity_description: entityDescription,
+      entity_description: entityDescription !== "" ? entityDescription : null,
       target_name: configuration.dirtyColumn,
       target_data: dirtyColumData,
       pivot_names: Array.from(configuration.pivotColumns),
@@ -267,12 +255,12 @@ const RepairModule = (props) => {
       let rowObj = content[i];
       if (dirtyData.rows.has(i)) {
         const repairValue = repairs[j].value;
-        rowObj[result.column] = repairValue;
+        rowObj[resultColumn] = repairValue;
         data.push(repairs[j]);
         if (repairValue !== null) marked.add(i);
         j++;
       } else {
-        rowObj[result.column] = "";
+        rowObj[resultColumn] = "";
         data.push(null);
       }
       content[i] = rowObj;
@@ -315,8 +303,8 @@ const RepairModule = (props) => {
       let content = [...dirtyData.content];
       for (const index of result.marked) {
         let rowObj = content[index];
-        rowObj[configuration.dirtyColumn] = rowObj[result.column];
-        delete rowObj[result.column];
+        rowObj[configuration.dirtyColumn] = rowObj[resultColumn];
+        delete rowObj[resultColumn];
         content[index] = rowObj;
       }
 
@@ -345,16 +333,16 @@ const RepairModule = (props) => {
 
   return (
     <Box
-      display="flex"
       height="100%"
       width="100%"
+      display="flex"
       border={5}
       borderColor={borderColor}
     >
       <Box
         id="left"
+        height="100%"
         width="20%"
-        display="flex"
         borderRight={5}
         borderColor={borderColor}
       >
@@ -362,7 +350,7 @@ const RepairModule = (props) => {
           dirtyDataFileName={dirtyData.fileName}
           onChangeDirtyDataFile={onChangeDirtyDataFile}
           isDirtyDataUploaded={dirtyData.content !== null}
-          entityDescription={configuration.entityDescription}
+          entityDescription={entityDescription}
           onChangeEntityDescription={onChangeEntityDescription}
           columns={dirtyData.columns}
           dirtyColumn={configuration.dirtyColumn}
@@ -389,18 +377,17 @@ const RepairModule = (props) => {
           onRunJob={onRunJob}
         />
       </Box>
-      <Box id="right" width="80%" display="flex" flexDirection="column">
+      <Box height="100%" width="80%">
         {dirtyData.content === null ? (
-          <Box padding="2%" height="100%">
+          <Box height="100%" padding="2%">
             <DragDropFile onChange={onChangeDirtyDataFile} />
           </Box>
         ) : result.isLoading ? (
           <Box
+            height="100%"
             display="flex"
-            flexDirection="column"
             justifyContent="center"
             alignItems="center"
-            height="100%"
           >
             <Mosaic
               color={["#33CCCC", "#33CC36", "#B8CC33", "#FCCA00"]}
@@ -409,20 +396,20 @@ const RepairModule = (props) => {
             />
           </Box>
         ) : (
-          <>
-            <Box id="rightTop" height="80%">
+          <Box height="100%">
+            <Box id="rightTop" height="80%" overflow="auto">
               <DataTable
                 dirtyDataContent={dirtyData.content}
                 columns={
                   result.data.length === 0
                     ? dirtyData.columns
-                    : [...dirtyData.columns, result.column]
+                    : [...dirtyData.columns, resultColumn]
                 }
-                onChangeDirtyDataFile={onChangeDirtyDataFile}
                 isDirtyDataUploaded={dirtyData.content !== null}
                 dirtyColumn={configuration.dirtyColumn}
                 pivotColumns={configuration.pivotColumns}
                 isIndexSelected={configuration.searchIndexName !== ""}
+                resultColumn={resultColumn}
                 result={result}
                 onMarkResult={onMarkResult}
                 onShowEvidence={onShowEvidence}
@@ -440,7 +427,7 @@ const RepairModule = (props) => {
                 />
               )}
             </Box>
-          </>
+          </Box>
         )}
       </Box>
     </Box>

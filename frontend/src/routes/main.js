@@ -29,8 +29,8 @@ export const MainPage = (props) => {
       </Box>
       <Box
         id="repair-body"
+        height="100%"
         display={isRepairView ? "flex" : "none"}
-        flexGrow={1}
       >
         <RepairModule
           searchIndexList={indexList}
@@ -39,8 +39,8 @@ export const MainPage = (props) => {
       </Box>
       <Box
         id="index-body"
+        height="100%"
         display={!isRepairView ? "flex" : "none"}
-        flexGrow={1}
       >
         <IndexModule
           searchIndexList={indexList}
