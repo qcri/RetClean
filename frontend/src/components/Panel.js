@@ -150,6 +150,7 @@ const Panel = (props) => {
         selection={props.searchIndexName}
         multiple={false}
         includeGroupNames={false}
+        includeNone={true}
         groupedOptions={[{ name: "indices", options: props.searchIndexNames }]}
         onChange={props.onSelectSearchIndexName}
       />
