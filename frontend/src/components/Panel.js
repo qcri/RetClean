@@ -1,11 +1,5 @@
 import React from "react";
 import {
-  styled,
-  createTheme,
-  ThemeProvider,
-  useTheme,
-} from "@mui/material/styles";
-import {
   Box,
   Paper,
   Typography,
@@ -14,17 +8,13 @@ import {
   Button,
   CircularProgress,
 } from "@mui/material";
+import { createTheme, ThemeProvider, useTheme } from "@mui/material/styles";
 import Grid from "@mui/material/Unstable_Grid2";
 
 import FileInput from "./FileInput";
 import OptionButtonGroup from "./OptionButtonGroup";
 import CustomSelect from "./CustomSelect";
 import RadioButtonRegex from "./RadioButtonRegex";
-
-const Item = styled(Paper)(() => ({
-  fontFamily: "League Spartan",
-  fontSize: "1.3rem",
-}));
 
 const buttonTheme = createTheme({
   palette: {
