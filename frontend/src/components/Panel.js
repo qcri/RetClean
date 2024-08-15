@@ -171,7 +171,7 @@ const Panel = (props) => {
             disabled={
               !props.isDirtyDataUploaded ||
               props.dirtyColumn === "" ||
-              props.reasonerName == "" ||
+              props.reasonerName === "" ||
               props.isLoading
             }
             disableElevation
