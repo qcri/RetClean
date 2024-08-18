@@ -65,7 +65,7 @@ async def search_data(
                     "row_number" : x.payload["row_number"] 
                 } for x in qdrant_results]
 
-                search_results.extend(qdrant_results_formatted)
+                search_results.append(qdrant_results_formatted)
 
             if index_type in ["syntactic", "both"]:
                 # Format data into appropriate query format for ES
@@ -91,16 +91,21 @@ async def search_data(
                 # print("*"*50)
                 # print("RESULTS:", es_results["hits"]["hits"])
                 # print("PARSED RESULTS:", [x1["_source"] for x1 in es_results["hits"]["hits"]])
-                search_results = [x1["_source"] for x1 in es_results["hits"]["hits"]] 
-                search_results = [{**x1["_source"], "values": format_string_for_eval("{ " + x1["_source"]["values"].strip()[:-2] + " }").replace(" '", "'")} for x1 in es_results["hits"]["hits"]]
+                # search_results = [x1["_source"] for x1 in es_results["hits"]["hits"]] 
+                # print("ES RESULTS (SINGLE)", [{**x1["_source"], "values": format_string_for_eval("{ " + x1["_source"]["values"].strip()[:-2] + " }").replace(" '", "'")} for x1 in es_results["hits"]["hits"]])
+                search_results.append([{**x1["_source"], "values": format_string_for_eval("{ " + x1["_source"]["values"].strip()[:-2] + " }").replace(" '", "'")} for x1 in es_results["hits"]["hits"]])
                 
         except Exception as e:
             return {"status": "fail", "message": str(e)}
         
+        # Flattten in case both indexes are used
+        if search_results != [] and type(search_results[0]) == list:
+            search_results = [item for sublist in search_results for item in sublist]
+        # print("SEARCH RESULTS", type(search_results), type(search_results[0]), search_results)
         results.append(search_results)
 
     # results is 2D list where for each target value, we have a list of top-k results
-    print("SEARCH RESULTS", type(results), results)
+    # print("SEARCH RESULTS", type(results), results)
     return {"status": "success", "results": results}
 
 

@@ -15,10 +15,10 @@ async def repair_data(
     reranker_type: Optional[str],
 ) -> dict:
 
-    print("TARGET DATA", type(target_data), type(target_data[0]), target_data)
-    print("TARGET NAME", type(target_name), target_name)
-    print("PIVOT NAMES", type(pivot_names), pivot_names)
-    print("PIVOT DATA", type(pivot_data), type(pivot_data[0]), pivot_data)
+    # print("TARGET DATA", type(target_data), type(target_data[0]), target_data)
+    # print("TARGET NAME", type(target_name), target_name)
+    # print("PIVOT NAMES", type(pivot_names), pivot_names)
+    # print("PIVOT DATA", type(pivot_data), type(pivot_data[0]), pivot_data)
     # Retrieve top-k nearest tuples from the index
     retrieved_list = []
     if index_name is not None:
