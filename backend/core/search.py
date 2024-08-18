@@ -88,9 +88,9 @@ async def search_data(
                     size=k,
                 )  # Expected Format: [{"values": str, "table_name": str, "row_number": int, "score": float} , {"values": str, "table_name": str, "row_number": int, "score": float} , ... ]
 
-                print("*"*50)
-                print("RESULTS:", es_results["hits"]["hits"])
-                print("PARSED RESULTS:", [x1["_source"] for x1 in es_results["hits"]["hits"]])
+                # print("*"*50)
+                # print("RESULTS:", es_results["hits"]["hits"])
+                # print("PARSED RESULTS:", [x1["_source"] for x1 in es_results["hits"]["hits"]])
                 search_results = [x1["_source"] for x1 in es_results["hits"]["hits"]] 
                 search_results = [{**x1["_source"], "values": format_string_for_eval("{ " + x1["_source"]["values"].strip()[:-2] + " }").replace(" '", "'")} for x1 in es_results["hits"]["hits"]]
                 
@@ -100,6 +100,7 @@ async def search_data(
         results.append(search_results)
 
     # results is 2D list where for each target value, we have a list of top-k results
+    print("SEARCH RESULTS", type(results), results)
     return {"status": "success", "results": results}
 
 

@@ -26,7 +26,7 @@ class LanguageModel(ABC):
                 ret = {}
                 key_val_pairs = s.split(",")
                 for pair in key_val_pairs:
-                    print("PAIR: ", pair)
+                    # print("PAIR: ", pair)
                     key, val = pair.split(":")
                     ret[key.strip()] = val.strip()
                 return ret
@@ -52,20 +52,20 @@ class LanguageModel(ABC):
                 # print("RETRIEVED: ", retrieved)
                 retrived_object = retrieved[int(response_dict["object_id"].split(" ")[-1])]["values"] if response_dict["object_id"] not in ["", "none", "unknown", 'n/a'] else None
                 # print("RETRIVED OBJECT: ", retrived_object)
-                print("RETRIEVED OBJECT 1:" , retrived_object)
+                # print("RETRIEVED OBJECT 1:" , retrived_object)
                 retrived_object = self.stringified_dict_to_dict(retrived_object) if retrived_object != None and type(retrived_object) == str else retrived_object
-                print("RETRIEVED OBJECT 2", retrived_object)
+                # print("RETRIEVED OBJECT 2", retrived_object)
             else:
                 table_name = None
                 row_number = None
                 retrived_object = None
 
-            print("RETURNING: ", {
-                "value": value,
-                "table_name": table_name,
-                "row_number": row_number,
-                "tuple" : retrived_object
-            })
+            # print("RETURNING: ", {
+            #     "value": value,
+            #     "table_name": table_name,
+            #     "row_number": row_number,
+            #     "tuple" : retrived_object
+            # })
 
             return {
                 "value": value,
