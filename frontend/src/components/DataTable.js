@@ -24,7 +24,6 @@ const CustomToolbar = (props) => (
     <ButtonGroup
       disableElevation
       variant="contained"
-      size="large"
       sx={{ mb: "4px", height: "3rem" }}
     >
       <GridToolbarFilterButton />
@@ -34,7 +33,7 @@ const CustomToolbar = (props) => (
           startIcon={<KeyboardDoubleArrowDownIcon />}
           onClick={props.onApplyRepairs}
         >
-          {props.isRepair ? "Apply Repairs" : "Add Column"}
+          Apply Repairs
         </Button>
       )}
       {props.result.data.length !== 0 && (
