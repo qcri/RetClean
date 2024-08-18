@@ -62,7 +62,6 @@ const DataTuple = (props) => {
           },
         }}
       />
-      //{" "}
     </Box>
   );
 };

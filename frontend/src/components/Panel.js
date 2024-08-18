@@ -26,12 +26,12 @@ const buttonTheme = createTheme({
 const ComponentGridWithName = (name, WrappedComponent) => {
   return (props) => (
     <Grid container>
-      <Grid xs={4}>
+      <Grid xs={12}>
         <Paper elevation={0}>
-          <Typography fontSize="1.3rem">{name}</Typography>
+          <Typography fontSize="1.rem">{name}</Typography>
         </Paper>
       </Grid>
-      <Grid xs={8}>
+      <Grid xs={12}>
         <WrappedComponent {...props} />
       </Grid>
     </Grid>
@@ -46,6 +46,7 @@ const LabeledDivider = (props) => {
       <Divider
         textAlign="left"
         sx={{
+          padding: "0.5rem",
           fontSize: "1.3rem",
           "&::before, &::after": { borderTop: 3, borderColor: borderColor },
         }}
@@ -84,6 +85,7 @@ const RerankerOptionButtonGroup = ComponentGridWithName(
 const Panel = (props) => {
   const theme = useTheme();
   const backgroundColor = theme.palette.background.paper;
+
   return (
     <Box
       display="flex"
@@ -91,7 +93,7 @@ const Panel = (props) => {
       justifyContent="space-between"
       height="100%"
       width="100%"
-      padding={2}
+      padding={1}
       bgcolor={backgroundColor}
     >
       <DirtyDataFileInput
@@ -126,6 +128,7 @@ const Panel = (props) => {
         onChangeText={props.onChangeRepairString}
         defaultStrings={props.repairOptionDefaultStrings}
       />
+
       <PivotColumnSelect
         disabled={!props.isDirtyDataUploaded}
         label="Select"
@@ -165,7 +168,7 @@ const Panel = (props) => {
         onClick={props.onChangeRerankType}
       />
 
-      <Grid mdOffset="auto">
+      <Grid mdOffset="auto" paddingTop={1}>
         <ThemeProvider theme={buttonTheme}>
           <Button
             disabled={

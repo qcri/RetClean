@@ -8,7 +8,6 @@ const OptionButtonGroup = (props) => {
     <ButtonGroup
       fullWidth
       disabled={props.disabled}
-      size="large"
       variant="outlined"
       aria-label="outlined button group"
       sx={{ bgcolor: backgroundColor, height: 50 }}

@@ -11,8 +11,8 @@ import ThemeSwitch from "./ThemeSwitch";
 const Header = (props) => {
   return (
     <AppBar position="sticky">
-      <Toolbar>
-        <Typography variant="h3" fontWeight="bold" flex={1} py={1}>
+      <Toolbar variant="dense">
+        <Typography variant="h3" fontWeight="bold" flex={1}>
           {props.text}
         </Typography>
         <Stack direction="row" spacing={5} alignItems="center" flex={1}>
