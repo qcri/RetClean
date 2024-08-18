@@ -24,26 +24,25 @@ const CustomToolbar = (props) => (
     <ButtonGroup
       disableElevation
       variant="contained"
-      size="large"
       sx={{ mb: "4px", height: "3rem" }}
     >
       <GridToolbarFilterButton />
       <GridToolbarExport />
       {props.result.data.length !== 0 && (
-        <>
-          <Button
-            startIcon={<KeyboardDoubleArrowDownIcon />}
-            onClick={props.onApplyRepairs}
-          >
-            Apply Repairs
-          </Button>
-          <Button
-            startIcon={<NotInterestedIcon />}
-            onClick={props.onCancelRepairs}
-          >
-            Cancel
-          </Button>
-        </>
+        <Button
+          startIcon={<KeyboardDoubleArrowDownIcon />}
+          onClick={props.onApplyRepairs}
+        >
+          Apply Repairs
+        </Button>
+      )}
+      {props.result.data.length !== 0 && (
+        <Button
+          startIcon={<NotInterestedIcon />}
+          onClick={props.onCancelRepairs}
+        >
+          Cancel
+        </Button>
       )}
     </ButtonGroup>
   </GridToolbarContainer>
@@ -144,8 +143,6 @@ const DataTable = (props) => {
 
   // Scroll to the right when the resultColumn is added for the first time
   useEffect(() => {
-    console.log(table.columns.length - 1);
-    console.log(resultColumnAdded);
     if (resultColumnAdded) {
       setTimeout(() => {
         apiRef.current.scrollToIndexes({

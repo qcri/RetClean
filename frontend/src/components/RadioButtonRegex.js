@@ -30,8 +30,6 @@ const RadioButtonRegex = (props) => {
               value={key}
               control={<Radio />}
               label={key}
-              labelPlacement="top"
-              sx={{ marginRight: "0", marginLeft: "5px" }}
             />
           ))}
         </RadioGroup>
@@ -42,7 +40,6 @@ const RadioButtonRegex = (props) => {
         label="Regex"
         value={props.text}
         onChange={(e) => props.onChangeText(e.target.value)}
-        sx={{ bgcolor: "white" }}
       />
     </Stack>
   );

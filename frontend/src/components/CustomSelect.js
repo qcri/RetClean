@@ -21,6 +21,7 @@ const CustomSelect = (props) => {
           props.multiple ? `${selected.length} selected` : selected
         }
       >
+        {props.includeNone && <MenuItem value="">None</MenuItem>}
         {props.groupedOptions.flatMap((group, groupIndex) => [
           props.includeGroupNames && (
             <ListSubheader key={`header-${groupIndex}`}>
