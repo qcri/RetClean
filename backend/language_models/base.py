@@ -38,7 +38,9 @@ class LanguageModel(ABC):
         # Parse model output and return
 
         # Method 1: Expected JSON format, no noise
+        print("MODEL RESPONSE: ", model_response)
         try:
+            print("METHOD 1")
             # print("METHOD 1 MODEL RESPONSE: ", model_response)
             response_dict = {k:str(v) for k,v in eval(model_response).items()}
             # print("RESPONSE DICT: ", response_dict)
@@ -79,6 +81,7 @@ class LanguageModel(ABC):
 
         # Method 2: Expected JSON format, with noise around
         try:
+            print("METHOD 2")
             # Extract the dictionary part of a string from within a larger string
             start = model_response.find("{")
             end = model_response.rfind("}") + 1
@@ -105,6 +108,7 @@ class LanguageModel(ABC):
 
         # Method 3: Broken JSON format, with/without noise around
         try:
+            print("METHOD 3")
             # Get value
             try:
                 # find the term "value : " in the response and extract everything after that till the next white space
@@ -154,6 +158,7 @@ class LanguageModel(ABC):
             pass
 
         # If all above fails
+        print("METHOD 4")
         return {"value": None, "table_name": None, "row_number": None, "tuple" : None}
 
     

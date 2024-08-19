@@ -37,6 +37,8 @@ async def search_data(
     # Retrieve using chosen index
     results = []
     for pvt_row, tgt in zip(pivot_values, target_values):
+        # print("*"*50)
+        # print("DOING", pvt_row)
         search_results = []
         try:
             if index_type in ["semantic", "both"]:
@@ -88,7 +90,7 @@ async def search_data(
                     size=k,
                 )  # Expected Format: [{"values": str, "table_name": str, "row_number": int, "score": float} , {"values": str, "table_name": str, "row_number": int, "score": float} , ... ]
 
-                # print("*"*50)
+
                 # print("RESULTS:", es_results["hits"]["hits"])
                 # print("PARSED RESULTS:", [x1["_source"] for x1 in es_results["hits"]["hits"]])
                 # search_results = [x1["_source"] for x1 in es_results["hits"]["hits"]] 
@@ -96,6 +98,7 @@ async def search_data(
                 search_results.append([{**x1["_source"], "values": format_string_for_eval("{ " + x1["_source"]["values"].strip()[:-2] + " }").replace(" '", "'")} for x1 in es_results["hits"]["hits"]])
                 
         except Exception as e:
+            print("ERROR HERE 111", e)
             return {"status": "fail", "message": str(e)}
         
         # Flattten in case both indexes are used
