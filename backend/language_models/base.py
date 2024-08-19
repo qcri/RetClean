@@ -41,33 +41,34 @@ class LanguageModel(ABC):
         print("MODEL RESPONSE: ", model_response)
         try:
             print("METHOD 1")
-            # print("METHOD 1 MODEL RESPONSE: ", model_response)
+            print("METHOD 1 MODEL RESPONSE: ", model_response)
             response_dict = {k:str(v) for k,v in eval(model_response).items()}
-            # print("RESPONSE DICT: ", response_dict)
+            print("RESPONSE DICT: ", response_dict)
             value = response_dict["value"] if response_dict["value"].lower().strip() not in ["", "none", "unknown", 'n/a', "':"] else None
-            # print("VALUE: ", value)
+            print("VALUE: ", value)
             if value != None:
                 table_name = response_dict["table_name"] if response_dict["table_name"].lower().strip() not in ["", "none", "unknown", 'n/a'] else None
-                # print("TABLE NAME: ", table_name)
+                print("TABLE NAME: ", table_name)
                 row_number = response_dict["row_number"] if str(response_dict["row_number"]).lower().strip() not in ["", "none", "unknown", ' n/a'] else None
-                # print("ROW NUMBER: ", row_number)
-                # print("RETRIEVED: ", retrieved)
+                print("ROW NUMBER: ", row_number)
+                print("RETRIEVED: ", retrieved)
                 retrived_object = retrieved[int(response_dict["object_id"].split(" ")[-1])]["values"] if response_dict["object_id"] not in ["", "none", "unknown", 'n/a'] else None
-                # print("RETRIVED OBJECT: ", retrived_object)
-                # print("RETRIEVED OBJECT 1:" , retrived_object)
+                print("RETRIVED OBJECT: ", retrived_object)
+                print("RETRIEVED OBJECT 1:" , retrived_object)
                 retrived_object = self.stringified_dict_to_dict(retrived_object) if retrived_object != None and type(retrived_object) == str else retrived_object
-                # print("RETRIEVED OBJECT 2", retrived_object)
+                print("RETRIEVED OBJECT 2", retrived_object)
             else:
+                print("MADE IT TO ELSE")
                 table_name = None
                 row_number = None
                 retrived_object = None
 
-            # print("RETURNING: ", {
-            #     "value": value,
-            #     "table_name": table_name,
-            #     "row_number": row_number,
-            #     "tuple" : retrived_object
-            # })
+            print("RETURNING: ", {
+                "value": value,
+                "table_name": table_name,
+                "row_number": row_number,
+                "tuple" : retrived_object
+            })
 
             return {
                 "value": value,
