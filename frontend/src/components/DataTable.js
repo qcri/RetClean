@@ -10,7 +10,6 @@ import {
   Box,
   Button,
   ButtonGroup,
-  Tooltip,
   Checkbox,
   FormControlLabel,
   useTheme,
@@ -26,7 +25,6 @@ const CustomToolbar = (props) => (
       variant="contained"
       sx={{ mb: "4px", height: "3rem" }}
     >
-      <GridToolbarFilterButton />
       <GridToolbarExport />
       {props.result.data.length !== 0 && (
         <Button

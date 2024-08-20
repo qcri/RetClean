@@ -1,3 +1,3 @@
-# FROM ollama/ollama:latest
+FROM ollama/ollama:latest
 
-# RUN ollama serve & sleep 5 && ollama run llama3.1
+RUN ollama serve & sleep 5 && ollama run llama3.1

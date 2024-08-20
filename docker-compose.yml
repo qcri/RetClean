@@ -20,14 +20,14 @@ services:
     depends_on:
       - elasticsearch
       - qdrant
-      # - ollama
+      - ollama
 
-  # ollama:
-  #   build: ./ollama
-  #   volumes:
-  #     - ./ollama:/app
-  #   ports:
-  #     - "11434:11434"
+  ollama:
+    build: ./ollama
+    volumes:
+      - ./ollama:/app
+    ports:
+      - "11434:11434"
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.7.0
