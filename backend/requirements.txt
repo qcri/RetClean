@@ -11,3 +11,4 @@ python-multipart
 openai==0.28.1
 ollama
 anthropic
+rerankers
