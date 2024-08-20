@@ -15,10 +15,6 @@ async def repair_data(
     reranker_type: Optional[str],
 ) -> dict:
 
-    # print("TARGET DATA", type(target_data), type(target_data[0]), target_data)
-    # print("TARGET NAME", type(target_name), target_name)
-    # print("PIVOT NAMES", type(pivot_names), pivot_names)
-    # print("PIVOT DATA", type(pivot_data), type(pivot_data[0]), pivot_data)
     # Retrieve top-k nearest tuples from the index
     retrieved_list = []
     if index_name is not None:
@@ -38,6 +34,7 @@ async def repair_data(
             retrieved_list = search_results["results"]
 
     # Rerank search results if reranker is specified
+    reranker_type = None # force ignore reranking
     if reranker_type is not None:
         rerank_results = await rerank_data(
             reranker_type,
@@ -69,6 +66,4 @@ async def repair_data(
         results = prompt_results["results"]
 
     # Return final results to frontend
-    # print("*"*50)
-    # print("FINAL RETURNED RESULTS: ", results)
     return {"status": "success", "results": results}

@@ -15,6 +15,7 @@ class LanguageModel1(LanguageModel):
             text, tokenize=True, add_generation_prompt=True, return_tensors="pt"
         )
         chat_format_prompt = str(self.tokenizer.decode(formatted_tokens[0]))
+        return chat_format_prompt
 
     def generate(self, text: str) -> str:
         response = ollama.chat(
