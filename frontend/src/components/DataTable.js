@@ -51,18 +51,16 @@ const CustomToolbar = (props) => (
 const ResultCell = (props) => (
   <Box>
     {props.params.value !== null && (
-      <Box>
-        <Tooltip title={props.params.value}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={props.result.marked.has(props.params.id)}
-                onChange={() => props.onMarkResult(props.params.id)}
-              />
-            }
-            label={props.params.value}
-          />
-        </Tooltip>
+      <Box display="flex" justifyContent="space-between">
+        <FormControlLabel
+          label={props.params.value}
+          control={
+            <Checkbox
+              checked={props.result.marked.has(props.params.id)}
+              onChange={() => props.onMarkResult(props.params.id)}
+            />
+          }
+        />
         {props.isIndexSelected && (
           <Button
             startIcon={<InfoIcon />}
@@ -85,27 +83,30 @@ const DataTable = (props) => {
   const [resultColumnAdded, setResultColumnAdded] = useState(false);
 
   useEffect(() => {
-    if (props.isDirtyDataUploaded) {
-      const rows = props.dirtyDataContent.map((data, i) => ({
-        id: i,
-        ...data,
-      }));
-      const idColumn = {
-        field: "id",
-        headerName: "ID",
-        headerClassName: "normal--header",
-      };
+    const rows = props.dirtyDataContent.map((data, i) => ({ id: i, ...data }));
+    const idColumn = {
+      field: "id",
+      headerName: "ID",
+      headerClassName: "normal--header",
+    };
 
-      const updatedColumns = props.columns.map((header) => ({
+    const updatedColumns = props.columns.map((header) => {
+      const minWidth = 150;
+      const factor = 10;
+      const additionalWidth = header == props.resultColumn ? 66 : 0;
+      return {
         field: header,
-        editable: true,
-        width: Math.max(
-          ...props.dirtyDataContent.map(
-            (row) => row[header]?.toString().length * 10
-          ),
-          header.length * 10
-        ),
+        headerName: header,
         headerClassName: getHeaderClass(header, props),
+        width:
+          Math.max(
+            minWidth,
+            header.length * factor,
+            ...props.dirtyDataContent.map(
+              (row) => row[header]?.toString().length * factor
+            )
+          ) + additionalWidth,
+        editable: true,
         ...(header === props.resultColumn && {
           cellClassName: "result--cell",
           renderCell: (params) => (
@@ -118,27 +119,24 @@ const DataTable = (props) => {
             />
           ),
         }),
-      }));
+      };
+    });
 
-      // Check if the result column is added for the first time
-      if (
-        !table.columns.some((col) => col.field === props.resultColumn) &&
-        props.columns.includes(props.resultColumn)
-      ) {
-        setResultColumnAdded(true);
-      }
-
-      setTable({ columns: [idColumn, ...updatedColumns], rows });
+    // Check if the result column is added for the first time
+    if (
+      !table.columns.some((col) => col.field === props.resultColumn) &&
+      props.columns.includes(props.resultColumn)
+    ) {
+      setResultColumnAdded(true);
     }
+
+    setTable({ columns: [idColumn, ...updatedColumns], rows });
   }, [
     props.dirtyDataContent,
-    props.isDirtyDataUploaded,
-    props.result,
-    props.onMarkResult,
-    props.onShowEvidence,
+    props.result.data,
+    props.result.marked,
     props.dirtyColumn,
     props.pivotColumns,
-    props.resultColumn,
   ]);
 
   // Scroll to the right when the resultColumn is added for the first time
@@ -153,6 +151,13 @@ const DataTable = (props) => {
       setResultColumnAdded(false);
     }
   }, [resultColumnAdded, table.columns.length, apiRef]);
+
+  const onColumnWidthChange = (params) => {
+    const newColumns = table.columns.map((col) =>
+      col.field === params.field ? { ...col, width: params.width } : { ...col }
+    );
+    setTable({ ...table, columns: newColumns });
+  };
 
   const getHeaderClass = (header, props) => {
     if (header === props.resultColumn) return "result--header";
@@ -172,6 +177,7 @@ const DataTable = (props) => {
       apiRef={apiRef} // Attach the apiRef to the DataGrid
       rows={table.rows}
       columns={table.columns}
+      onColumnWidthChange={onColumnWidthChange}
       isRowSelectable={() => false}
       slots={{ toolbar: () => CustomToolbar(props) }}
       sx={{

@@ -397,7 +397,7 @@ const RepairModule = (props) => {
           </Box>
         ) : (
           <Box height="100%">
-            <Box id="rightTop" height="80%" overflow="auto">
+            <Box id="rightTop" height="80%">
               <DataTable
                 dirtyDataContent={dirtyData.content}
                 columns={
