@@ -30,3 +30,5 @@ Thumbs.db
 # Docker
 *.env
 
+backend/language_models/llama31_tokenizer
+
