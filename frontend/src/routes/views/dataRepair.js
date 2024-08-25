@@ -47,6 +47,9 @@ const RepairModule = (props) => {
     data: [],
     marked: new Set(),
     isLoading: false,
+  });
+
+  const [evidence, setEvidence] = useState({
     sourceTuple: null,
     sourceTableName: null,
     sourceRowNumber: null,
@@ -115,10 +118,8 @@ const RepairModule = (props) => {
       repairString: "*",
       pivotColumns: new Set(),
     });
-    setResult({
-      ...result,
-      data: [],
-      marked: new Set(),
+    setResult({ ...result, data: [], marked: new Set() });
+    setEvidence({
       sourceTuple: null,
       sourceTableName: null,
       sourceRowNumber: null,
@@ -260,17 +261,18 @@ const RepairModule = (props) => {
         if (repairValue !== null) marked.add(i);
         j++;
       } else {
-        rowObj[resultColumn] = "";
+        rowObj[resultColumn] = null;
         data.push(null);
       }
       content[i] = rowObj;
     }
-
     setResult({
       ...result,
       data: data,
       marked: marked,
       isLoading: false,
+    });
+    setEvidence({
       sourceTuple: null,
       sourceTableName: null,
       sourceRowNumber: null,
@@ -281,17 +283,15 @@ const RepairModule = (props) => {
   const onMarkResult = (index) => {
     let marked = new Set([...result.marked]);
     marked.has(index) ? marked.delete(index) : marked.add(index);
-    setResult({ ...result, marked: marked });
+    setResult({ ...result, marked });
   };
 
   const onShowEvidence = (index) => {
-    let dataObj = result.data[index];
-    let sourceTuple = dataObj.tuple;
-    let sourceTableName = dataObj.table_name;
-    let sourceRowNumber = dataObj.row_number;
-
-    setResult({
-      ...result,
+    const dataObj = result.data[index];
+    const sourceTuple = dataObj.tuple;
+    const sourceTableName = dataObj.table_name;
+    const sourceRowNumber = dataObj.row_number;
+    setEvidence({
       sourceTuple: sourceTuple,
       sourceTableName: sourceTableName,
       sourceRowNumber: sourceRowNumber,
@@ -307,11 +307,8 @@ const RepairModule = (props) => {
         delete rowObj[resultColumn];
         content[index] = rowObj;
       }
-
-      setResult({
-        ...result,
-        data: [],
-        marked: new Set(),
+      setResult({ ...result, data: [], marked: new Set() });
+      setEvidence({
         sourceTuple: null,
         sourceTableName: null,
         sourceRowNumber: null,
@@ -321,10 +318,8 @@ const RepairModule = (props) => {
   };
 
   const onCancelRepairs = () => {
-    setResult({
-      ...result,
-      data: [],
-      marked: new Set(),
+    setResult({ ...result, data: [], marked: new Set() });
+    setEvidence({
       sourceTuple: null,
       sourceTableName: null,
       sourceRowNumber: null,
@@ -419,11 +414,11 @@ const RepairModule = (props) => {
             </Box>
 
             <Box id="rightBottom" height="20%">
-              {result.sourceTuple !== null && (
+              {evidence.sourceTuple !== null && (
                 <Evidence
-                  sourceTuple={result.sourceTuple}
-                  sourceTableName={result.sourceTableName}
-                  sourceRowNumber={result.sourceRowNumber}
+                  sourceTuple={evidence.sourceTuple}
+                  sourceTableName={evidence.sourceTableName}
+                  sourceRowNumber={evidence.sourceRowNumber}
                 />
               )}
             </Box>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import {
   DataGrid,
   GridToolbarContainer,
@@ -76,8 +76,10 @@ const DataTable = (props) => {
   const headerBackgroundColor =
     theme.palette.custom.table.headers.backgroundColor;
   const tableBorderColor = theme.palette.custom.table.border.main;
+  const resultCellColor = theme.palette.custom.table.resultCell.backgroundColor;
+  const emptyCellColor = theme.palette.custom.table.emptyCell.backgroundColor;
   const [table, setTable] = useState({ columns: [], rows: [] });
-  const apiRef = useGridApiRef(); // Add apiRef for DataGrid
+  const apiRef = useGridApiRef();
   const [resultColumnAdded, setResultColumnAdded] = useState(false);
 
   useEffect(() => {
@@ -89,24 +91,20 @@ const DataTable = (props) => {
     };
 
     const updatedColumns = props.columns.map((header) => {
-      const minWidth = 150;
-      const factor = 10;
-      const additionalWidth = header == props.resultColumn ? 66 : 0;
       return {
         field: header,
         headerName: header,
         headerClassName: getHeaderClass(header, props),
-        width:
-          Math.max(
-            minWidth,
-            header.length * factor,
-            ...props.dirtyDataContent.map(
-              (row) => row[header]?.toString().length * factor
-            )
-          ) + additionalWidth,
+        width: getColumnWidth(header),
         editable: true,
         ...(header === props.resultColumn && {
-          cellClassName: "result--cell",
+          cellClassName: (params) => {
+            const idx = params.id;
+            const dirtyVal = rows[idx][props.dirtyColumn].toLowerCase().trim();
+            const resultVal = params.value?.toLowerCase().trim();
+            if (!resultVal) return "empty--cell";
+            if (resultVal !== dirtyVal) return "result--cell";
+          },
           renderCell: (params) => (
             <ResultCell
               params={params}
@@ -128,10 +126,9 @@ const DataTable = (props) => {
       setResultColumnAdded(true);
     }
 
-    setTable({ columns: [idColumn, ...updatedColumns], rows });
+    setTable({ columns: [idColumn, ...updatedColumns], rows: rows });
   }, [
     props.dirtyDataContent,
-    props.result.data,
     props.result.marked,
     props.dirtyColumn,
     props.pivotColumns,
@@ -157,6 +154,21 @@ const DataTable = (props) => {
     setTable({ ...table, columns: newColumns });
   };
 
+  const getColumnWidth = (header) => {
+    const minWidth = 150;
+    const factor = 10;
+    const additionalWidth = header === props.resultColumn ? 66 : 0;
+    return (
+      Math.max(
+        minWidth,
+        header.length * factor,
+        ...props.dirtyDataContent.map((row) =>
+          row[header] ? row[header].toString().length * factor : 0
+        )
+      ) + additionalWidth
+    );
+  };
+
   const getHeaderClass = (header, props) => {
     if (header === props.resultColumn) return "result--header";
     if (header === props.dirtyColumn && header !== props.resultColumn)
@@ -172,7 +184,7 @@ const DataTable = (props) => {
 
   return (
     <DataGrid
-      apiRef={apiRef} // Attach the apiRef to the DataGrid
+      apiRef={apiRef}
       rows={table.rows}
       columns={table.columns}
       onColumnWidthChange={onColumnWidthChange}
@@ -207,6 +219,12 @@ const DataTable = (props) => {
         "& .result--header": {
           backgroundColor: "green",
           color: headerTextColor,
+        },
+        "& .result--cell": {
+          backgroundColor: resultCellColor,
+        },
+        "& .empty--cell": {
+          backgroundColor: emptyCellColor,
         },
       }}
     />

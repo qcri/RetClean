@@ -3,6 +3,7 @@ from core.search import search_data
 from core.llm import prompt_with_data
 from core.rerank import rerank_data
 
+
 async def repair_data(
     entity_description: str,
     target_name: str,
@@ -20,14 +21,15 @@ async def repair_data(
     # print("PIVOT NAMES", type(pivot_names), pivot_names)
     # print("PIVOT DATA", type(pivot_data), type(pivot_data[0]), pivot_data)
     # Retrieve top-k nearest tuples from the index
+    reranker_type = None  # FOR VLDB DEMO PURPOSES (IT WORKS DW)
     retrieved_list = []
     if index_name is not None:
         search_results = await search_data(
             index_name,
-            index_type, 
-            target_name, # Name of column to impute [str]
-            target_data, # Value of target column list[strs]
-            pivot_names, 
+            index_type,
+            target_name,  # Name of column to impute [str]
+            target_data,  # Value of target column list[strs]
+            pivot_names,
             pivot_data,
             reranker_type is not None,
         )
@@ -38,13 +40,10 @@ async def repair_data(
             retrieved_list = search_results["results"]
 
     # Rerank search results if reranker is specified
+
     if reranker_type is not None:
         rerank_results = await rerank_data(
-            reranker_type,
-            target_name,
-            pivot_names,
-            pivot_data,
-            retrieved_list
+            reranker_type, target_name, pivot_names, pivot_data, retrieved_list
         )
 
         if rerank_results["status"] == "fail":

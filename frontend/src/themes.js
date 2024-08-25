@@ -39,6 +39,12 @@ export const lightTheme = createTheme({
         border: {
           main: "#EDEDED",
         },
+        resultCell: {
+          backgroundColor: "#90CAF9",
+        },
+        emptyCell: {
+          backgroundColor: "#E0E0E0",
+        },
       },
     },
   },
@@ -94,6 +100,12 @@ export const darkTheme = createTheme({
         },
         border: {
           main: "#2A2A2A",
+        },
+        resultCell: {
+          backgroundColor: "#1565C0",
+        },
+        emptyCell: {
+          backgroundColor: "#424242",
         },
       },
     },

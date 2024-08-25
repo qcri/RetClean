@@ -124,7 +124,8 @@ const IndexModule = (props) => {
 
   const onCreateIndex = async () => {
     setCreateIndexState({ ...createIndexState, isLoading: true });
-    await createIndex(createIndexState.indexName, createIndexState.files);
+    const indexName = createIndexState.indexName.trim().replace(/\s+/g, "_");
+    await createIndex(indexName, createIndexState.files);
     const indexData = await getIndexes();
     props.setSearchIndexList(indexData.indexes);
     setCreateIndexState({ ...createIndexState, isLoading: false });
