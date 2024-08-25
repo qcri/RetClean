@@ -10,7 +10,7 @@ import ThemeSwitch from "./ThemeSwitch";
 
 const Header = (props) => {
   return (
-    <AppBar position="sticky">
+    <AppBar position="sticky" sx={{ height: "100%" }}>
       <Toolbar variant="dense">
         <Typography variant="h3" fontWeight="bold" flex={1}>
           {props.text}

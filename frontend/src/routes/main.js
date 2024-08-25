@@ -18,7 +18,7 @@ export const MainPage = (props) => {
       height="100vh"
       width="100vw"
     >
-      <Box id="header">
+      <Box id="header" height="5%">
         <Header
           isRepairView={isRepairView}
           onChangeView={onChangeView}
@@ -29,7 +29,7 @@ export const MainPage = (props) => {
       </Box>
       <Box
         id="repair-body"
-        height="100%"
+        height="95%"
         display={isRepairView ? "flex" : "none"}
       >
         <RepairModule
@@ -39,7 +39,7 @@ export const MainPage = (props) => {
       </Box>
       <Box
         id="index-body"
-        height="100%"
+        height="95%"
         display={!isRepairView ? "flex" : "none"}
       >
         <IndexModule
