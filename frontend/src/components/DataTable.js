@@ -157,7 +157,7 @@ const DataTable = (props) => {
   const getColumnWidth = (header) => {
     const minWidth = 150;
     const factor = 10;
-    const additionalWidth = header == props.resultColumn ? 66 : 0;
+    const additionalWidth = header === props.resultColumn ? 66 : 0;
     return (
       Math.max(
         minWidth,
