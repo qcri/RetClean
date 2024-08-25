@@ -261,7 +261,7 @@ const RepairModule = (props) => {
         if (repairValue !== null) marked.add(i);
         j++;
       } else {
-        rowObj[resultColumn] = "";
+        rowObj[resultColumn] = null;
         data.push(null);
       }
       content[i] = rowObj;

@@ -30,5 +30,7 @@ Thumbs.db
 # Docker
 *.env
 
+# misc
 backend/language_models/llama31_tokenizer
+temp_ollama_test.py
 

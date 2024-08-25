@@ -44,8 +44,7 @@ async def prompt_with_data(
             wrapped_text = model.prompt_wrapper(prompt)  # Creates final prompt
             # print("WRAPPED TEXT:", wrapped_text)
             response = model.generate(
-                wrapped_text,
-                retrieved # None if no context given
+                wrapped_text, retrieved  # None if no context given
             )  # Generates response, return dict with 'value' and 'citation'
             print("RESPONSE:", response)
         except Exception as e:
