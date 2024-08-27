@@ -23,7 +23,7 @@ const CustomToolbar = (props) => (
     <ButtonGroup
       disableElevation
       variant="contained"
-      sx={{ mb: "4px", height: "3rem" }}
+      sx={{ mb: "4px", height: 50 }}
     >
       <GridToolbarExport />
       {props.result.data.length !== 0 && (
@@ -191,7 +191,7 @@ const DataTable = (props) => {
       isRowSelectable={() => false}
       slots={{ toolbar: () => CustomToolbar(props) }}
       sx={{
-        fontSize: "1.0 rem",
+        fontSize: "1.0rem",
         ".MuiDataGrid-cell": {
           border: 1,
           borderColor: tableBorderColor,

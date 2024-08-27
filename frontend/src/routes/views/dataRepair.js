@@ -99,18 +99,7 @@ const RepairModule = (props) => {
   // Pre-repair Methods
   const onChangeDirtyDataFile = async (files) => {
     if (files.length === 0) return;
-    const file = files[0];
-    let content = await parseData(file);
-    content = cleanData(content);
-    const rows = new Set(content.cleanObjArr.map((_, index) => index));
 
-    setDirtyData({
-      ...dirtyData,
-      fileName: file.name,
-      content: content.cleanObjArr,
-      columns: content.columns,
-      rows: rows,
-    });
     setConfiguration({
       ...configuration,
       dirtyColumn: "",
@@ -118,11 +107,23 @@ const RepairModule = (props) => {
       repairString: "*",
       pivotColumns: new Set(),
     });
-    setResult({ ...result, data: [], marked: new Set() });
+    setResult({ data: [], marked: new Set(), isLoading: false });
     setEvidence({
       sourceTuple: null,
       sourceTableName: null,
       sourceRowNumber: null,
+    });
+
+    const file = files[0];
+    let content = await parseData(file);
+    content = cleanData(content);
+    const rows = new Set(content.cleanObjArr.map((_, index) => index));
+    setDirtyData({
+      ...dirtyData,
+      fileName: file.name,
+      content: content.cleanObjArr,
+      columns: content.columns,
+      rows: rows,
     });
   };
 

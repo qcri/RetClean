@@ -51,7 +51,7 @@ const DataTuple = (props) => {
         columnVisibilityModel={{ id: false }}
         hideFooter
         sx={{
-          fontSize: "1.0 rem",
+          fontSize: "1.0rem",
           ".MuiDataGrid-cell": {
             border: 1,
             borderColor: tableBorderColor,

@@ -42,7 +42,7 @@ const DragDropFile = (props) => {
     >
       <FormLabel
         sx={{
-          fontSize: "2rem",
+          fontSize: "2.0rem",
           height: "100%",
           display: "flex",
           alignItems: "center",

@@ -11,7 +11,7 @@ const FileInput = (props) => {
         disableElevation
         variant="contained"
         component="label"
-        sx={{ px: "1.5rem" }}
+        sx={{ px: 2 }}
       >
         Browse
         <input

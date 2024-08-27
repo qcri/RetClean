@@ -28,7 +28,7 @@ const ComponentGridWithName = (name, WrappedComponent) => {
     <Grid container>
       <Grid xs={12}>
         <Paper elevation={0}>
-          <Typography fontSize="1.rem">{name}</Typography>
+          <Typography>{name}</Typography>
         </Paper>
       </Grid>
       <Grid xs={12}>
@@ -46,7 +46,7 @@ const LabeledDivider = (props) => {
       <Divider
         textAlign="left"
         sx={{
-          padding: "0.5rem",
+          padding: 1,
           fontSize: "1.3rem",
           "&::before, &::after": { borderTop: 3, borderColor: borderColor },
         }}
@@ -178,11 +178,10 @@ const Panel = (props) => {
               props.isLoading
             }
             disableElevation
-            size="large"
             variant="contained"
             color="green"
             onClick={props.onRunJob}
-            sx={{ width: "6rem", height: "3rem" }}
+            sx={{ width: 120, height: 50 }}
           >
             {props.isLoading ? <CircularProgress /> : "Start"}
           </Button>
