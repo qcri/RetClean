@@ -7,6 +7,7 @@ NO_RERANK_MULTIPLE_TOP_K = 2
 RERANK_SINGLE_TOP_K = 30
 RERANK_MULTIPLE_TOP_K = 15
 
+
 async def search_data(
     index_name: str,
     index_type: str,
@@ -27,7 +28,7 @@ async def search_data(
         and qdrant_client.collection_exists(collection_name=index_name)
     ):
         return {"status": "fail", "message": "index does not exist"}
-    
+
     # Determine the number of top-k results to retrieve based on type of index chosen
     if index_type == "both":
         k = RERANK_MULTIPLE_TOP_K if will_rerank else NO_RERANK_MULTIPLE_TOP_K
@@ -44,13 +45,13 @@ async def search_data(
             if index_type in ["semantic", "both"]:
                 # Format data into appropriate query format for Qdrant
                 search_query = search_preprocess(
-                    index_type="semantic", 
-                    pivot_names=pivot_names, 
-                    pivot_row_values=pvt_row, 
-                    target_name = target_name, 
-                    target_row_value = tgt
+                    index_type="semantic",
+                    pivot_names=pivot_names,
+                    pivot_row_values=pvt_row,
+                    target_name=target_name,
+                    target_row_value=tgt,
                 )
-                
+
                 # Encode Query using Sentence Transformer
                 search_query_embedding = sentence_model.encode(search_query).tolist()
 
@@ -58,14 +59,17 @@ async def search_data(
                 qdrant_results = qdrant_client.search(
                     collection_name=index_name,
                     query_vector=search_query_embedding,
-                    limit=k
+                    limit=k,
                 )  # Expected Format: [{"values": str, "table_name": str, "row_number": int, "score": float} , {"values": str, "table_name": str, "row_number": int, "score": float} , ... ]
 
-                qdrant_results_formatted = [{
-                    "values" : x.payload["values"],
-                    "table_name" : x.payload["table_name"], 
-                    "row_number" : x.payload["row_number"] 
-                } for x in qdrant_results]
+                qdrant_results_formatted = [
+                    {
+                        "values": x.payload["values"],
+                        "table_name": x.payload["table_name"],
+                        "row_number": x.payload["row_number"],
+                    }
+                    for x in qdrant_results
+                ]
 
                 search_results.append(qdrant_results_formatted)
 
@@ -90,17 +94,26 @@ async def search_data(
                     size=k,
                 )  # Expected Format: [{"values": str, "table_name": str, "row_number": int, "score": float} , {"values": str, "table_name": str, "row_number": int, "score": float} , ... ]
 
-
                 # print("RESULTS:", es_results["hits"]["hits"])
                 # print("PARSED RESULTS:", [x1["_source"] for x1 in es_results["hits"]["hits"]])
-                # search_results = [x1["_source"] for x1 in es_results["hits"]["hits"]] 
+                # search_results = [x1["_source"] for x1 in es_results["hits"]["hits"]]
                 # print("ES RESULTS (SINGLE)", [{**x1["_source"], "values": format_string_for_eval("{ " + x1["_source"]["values"].strip()[:-2] + " }").replace(" '", "'")} for x1 in es_results["hits"]["hits"]])
-                search_results.append([{**x1["_source"], "values": format_string_for_eval("{ " + x1["_source"]["values"].strip()[:-2] + " }").replace(" '", "'")} for x1 in es_results["hits"]["hits"]])
-                
+                search_results.append(
+                    [
+                        {
+                            **x1["_source"],
+                            "values": format_string_for_eval(
+                                "{ " + x1["_source"]["values"].strip()[:-2] + " }"
+                            ).replace(" '", "'"),
+                        }
+                        for x1 in es_results["hits"]["hits"]
+                    ]
+                )
+
         except Exception as e:
             print("ERROR HERE 111", e)
             return {"status": "fail", "message": str(e)}
-        
+
         # Flattten in case both indexes are used
         if search_results != [] and type(search_results[0]) == list:
             search_results = [item for sublist in search_results for item in sublist]
@@ -115,9 +128,9 @@ async def search_data(
 # Helper Function to format the values attribute for ES returned results
 def format_string_for_eval(s):
     # Add quotes around keys
-    s = re.sub(r'(\w+)\s*:', r"'\1':", s)
+    s = re.sub(r"(\w+)\s*:", r"'\1':", s)
     # Add quotes around all values
-    s = re.sub(r':\s*([^,}]+)', r": '\1'", s)
+    s = re.sub(r":\s*([^,}]+)", r": '\1'", s)
     # Handle None values
     s = s.replace(": 'None'", ": None")
     return s

@@ -100,9 +100,13 @@ async def update_index(index_name: str, files: list[UploadFile]) -> dict:
             )
 
             for i, row_json in enumerate(row_jsons):
-                
-                row_json_as_dict = eval(row_json.replace("null", "None").replace("true", "True").replace("false", "False"))
-                
+
+                row_json_as_dict = eval(
+                    row_json.replace("null", "None")
+                    .replace("true", "True")
+                    .replace("false", "False")
+                )
+
                 stringified_row_json = ""
                 for key, value in row_json_as_dict.items():
                     stringified_row_json += str(key) + " : " + str(value) + " , "
@@ -116,7 +120,7 @@ async def update_index(index_name: str, files: list[UploadFile]) -> dict:
                             "table_name": csv_file.filename,
                             "row_number": i,
                         },
-                    } 
+                    }
                 )
 
         # Perform bulk operations

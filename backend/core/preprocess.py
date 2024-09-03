@@ -26,7 +26,7 @@ def prompt_preprocess(
     # If context is provided, the prompt will include it and ask to use it
     if context:
         # print("", context)
-        # Make Context String 
+        # Make Context String
         context_str = ", \n".join(
             [
                 f"Object {i}: \nAttributes = {context[i]['values']} | table_name = {context[i]['table_name']} | row_number = {context[i]['row_number']}"
@@ -35,7 +35,7 @@ def prompt_preprocess(
         )
         # print("MADE CONTEXT STRING")
         # Make full prompt
-        base_prompt = f'''Given the context, provide the value for the missing attribute in the Target Object. Use only the provided context information.
+        base_prompt = f"""Given the context, provide the value for the missing attribute in the Target Object. Use only the provided context information.
         
 Additonal information that may be useful: {description}
 
@@ -45,12 +45,12 @@ Context Objects:
 Target Object:
 Attributes = { {pivot_names[i]:pivot_row_values['values'][i] for i in range(len(pivot_names))} }
 Missing Attribute Name = {target_name}
-'''
+"""
         # print("MADE BASE PROMPT")
     # If there is no context, the prompt asks the model to use its own information
     else:
         # print("IN THE ELSE")
-        base_prompt = f'''Given the Target Object, provide the value for the missing attribute.        
+        base_prompt = f"""Given the Target Object, provide the value for the missing attribute.        
 
 Additonal information that may be useful: {description}
 
@@ -59,7 +59,7 @@ Context: None
 Target Object:
 Attributes = { {pivot_names[i]:pivot_row_values['values'][i] for i in range(len(pivot_names))} }
 Missing Attribute Name = {target_name}
-'''
+"""
         # print("ELSE PROMPT:", base_prompt)
 
     ### We are not using entity description right now. Add it later somehow in the base_prompt

@@ -20,5 +20,6 @@ app.include_router(index_router, prefix="/index", tags=["Index"])
 app.include_router(repair_router, prefix="/repair", tags=["Repair"])
 app.include_router(models_router, prefix="/model", tags=["Model"])
 
+
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
