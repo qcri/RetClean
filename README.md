@@ -44,7 +44,7 @@ To get the application running just run the following command:
 ```
 docker-compose up
 ```
-The application hosted locally will run on port 8000: 
+The application hosted locally will run on port 3000: 
 [http://localhost:3000/](http://localhost:3000/)
 
 ## How to use
