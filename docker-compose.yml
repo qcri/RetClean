@@ -1,33 +1,40 @@
 services:
   frontend:
-    build: ./frontend
+    build: frontend
     volumes:
       - ./frontend:/app
+    networks:
+      - retclean
     ports:
       - "3000:80"
     depends_on:
       - backend
 
   backend:
-    build: ./backend
-    volumes:
-      - ./backend:/app
-    ports:
-      - "8000:8000"
+    build: backend
     environment:
       - ELASTICSEARCH_URL=http://elasticsearch:9200
       - QDRANT_URL=http://qdrant:6333
+      - OLLAMA_URL=http://ollama:11434
+    volumes:
+      - ./backend:/app
+    networks:
+      - retclean
+    ports:
+      - "8000:8000"
     depends_on:
       - elasticsearch
       - qdrant
-      # - ollama
+      - ollama
 
-  # ollama:
-  #   build: ./ollama
-  #   volumes:
-  #     - ./ollama:/app
-  #   ports:
-  #     - "11434:11434"
+  ollama:
+    build: ollama
+    volumes:
+      - ollama_storage:/ollama
+    networks:
+      - retclean
+    ports:
+      - "11434:11434"
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.7.0
@@ -36,6 +43,8 @@ services:
       - xpack.security.enabled=false
     volumes:
       - es_storage:/usr/share/elasticsearch/data
+    networks:
+      - retclean
     ports:
       - "9200:9200"
 
@@ -43,13 +52,19 @@ services:
     image: qdrant/qdrant:latest
     volumes:
       - qdrant_storage:/qdrant/storage
+    networks:
+      - retclean
     ports:
       - "6333:6333"
 
 volumes:
-  # ollama_storage:
-  #   driver: local
+  ollama_storage:
+    driver: local
   es_storage:
     driver: local
   qdrant_storage:
     driver: local
+
+networks:
+  retclean:
+    driver: bridge

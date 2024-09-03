@@ -1,3 +1,5 @@
-FROM ollama/ollama:latest
+FROM ollama/ollama
 
-RUN ollama serve & sleep 10 && ollama run llama3.1
+COPY ./pull-llama3.1-model.sh /pull-llama3.1-model.sh
+
+ENTRYPOINT ["/usr/bin/bash", "/pull-llama3.1-model.sh"]

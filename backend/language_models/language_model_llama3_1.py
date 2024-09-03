@@ -1,31 +1,18 @@
 import os
-import openai
-from dotenv import load_dotenv
+from ollama import Client
 
 from .base import LanguageModel
 
 
-class GPT4(LanguageModel):
+class Llama3_1(LanguageModel):
 
     def __init__(self):
-        super().__init__(type="cloud")
-
-        # Load environment variables from the .env file
-        load_dotenv()
-        self.model = "GPT4"
-        # Retrieve the variables
-        self.api_key = os.getenv("GPT4_API_KEY")
-        self.endpoint = os.getenv("GPT4_ENDPOINT")
-        self.api_version = os.getenv("GPT4_API_VERSION")
-        self.deployment_id = os.getenv("GPT4_DEPLOYMENT_ID")
-
-        openai.api_key = self.api_key
-        openai.api_base = self.endpoint
-        openai.api_type = "azure"
-        openai.api_version = self.api_version
+        super().__init__(type="local")
+        self.model = "llama3.1"
+        self.client = Client(host=os.getenv("OLLAMA_URL"))
 
     def prompt_wrapper(self, text: str) -> str:
-        # Create the messages object for the GPT-4 model
+        # Create the messages object for the Llama3.1 model
         messages = [
             {
                 "role": "system",
@@ -41,13 +28,13 @@ class GPT4(LanguageModel):
 
     def generate(self, text: str, retrieved: list) -> str:
         try:
-            response = openai.ChatCompletion.create(
-                engine="gpt4_imputer",  # The deployment name you chose when you deployed the GPT-3.5-Turbo or GPT-4 model.
+            response = self.client.chat(
+                model=self.model,
                 messages=text,
-                temperature=0.25,
+                keep_alive="10m",
             )
             return self.extract_value_citation(
-                response.choices[0]["message"]["content"], retrieved
+                response["message"]["content"], retrieved
             )
         except Exception as e:
             print("ERROR IN GENERATE", str(e))
