@@ -21,7 +21,7 @@ async def repair_data(
     # print("PIVOT NAMES", type(pivot_names), pivot_names)
     # print("PIVOT DATA", type(pivot_data), type(pivot_data[0]), pivot_data)
     # Retrieve top-k nearest tuples from the index
-    reranker_type = None  # FOR VLDB DEMO PURPOSES (IT WORKS DW)
+    # reranker_type = None  # FOR VLDB DEMO PURPOSES (IT WORKS DW)
     retrieved_list = []
     if index_name is not None:
         search_results = await search_data(
