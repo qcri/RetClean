@@ -37,7 +37,14 @@ services:
       - retclean
     ports:
       - "9200:9200"
-
+    
+  ollama:
+    build: ./ollama
+    volumes:
+      - ./ollama:/app
+    ports:
+       - "11434:11434"
+   
   qdrant:
     image: qdrant/qdrant:latest
     volumes:
