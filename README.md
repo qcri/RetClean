@@ -1,74 +1,105 @@
 # RetClean
+
 ## _Retrieval-Based Data Cleaning Using Foundation Models and Data Lakes_
 
-[![arXiv](https://img.shields.io/badge/arXiv%20paper-2303.16909-b31b1b.svg)](https://arxiv.org/abs/2303.16909)
+[![VLDB 2024](https://img.shields.io/badge/VLDB%202024-Paper-blue)](https://www.vldb.org/pvldb/vol17/p4421-eltabakh.pdf)
 
-This is the official repository for the RetClean data repair project under the QCRI organization. RetClean is a tool that leverages language models and CSV datalakes for data cleaning operations that require world knowledge.
+Welcome to the official repository of **RetClean**, a cutting-edge tool developed by QCRI for data repair tasks that demand world knowledge. RetClean combines the power of large language models (LLMs) with indexed CSV datalakes to clean and repair datasets efficiently.
+
+---
 
 ## Features
 
-- Upload CSV data for cleaning
-- Clean using LLMs standalone
-- Upload datalake of CSVs for indexing
-- Select an indexed datalake for additional context for cleaning
+-   **CSV Upload**: Upload CSV files for cleaning.
+-   **LLM-Driven Cleaning**: Perform standalone data repair using LLMs.
+-   **Data Lake Support**: Upload and index CSV-based datalakes for contextual cleaning.
+-   **Custom Configurations**: Choose indices, reasoner models, and re-ranker settings for tailored cleaning workflows.
 
-## Tech
+---
 
-RetClean makes use of several popular tools and frameworks. The main stack:
+## Tech Stack
 
-- [React](https://react.dev/)
-- [FastAPI](https://fastapi.tiangolo.com/)
-- [Ollama](https://ollama.com/)
-- [Elasticsearch](https://www.elastic.co/)
-- [Qdrant](https://qdrant.tech/)
-- [Docker](https://www.docker.com/)
+RetClean is built using modern tools and frameworks:
+
+-   **Frontend**: [React](https://react.dev/)
+-   **Backend**: [FastAPI](https://fastapi.tiangolo.com/)
+-   **LLM Serving**: [Ollama](https://ollama.com/)
+-   **Indexing and Search**: [Elasticsearch](https://www.elastic.co/) and [Qdrant](https://qdrant.tech/)
+-   **Containerization**: [Docker](https://www.docker.com/)
+
+---
 
 ## Getting Started
 
 ### Installation
 
-RetClean is relatively easy to install and deploy using Docker. Due to the different services used we use Docker Compose to manage the containers of the application.
+Set up RetClean effortlessly using Docker Compose.
 
-In the RetClean root directory, simply run the following command:
+1. Clone this repository and navigate to the project root.
+2. Build the application using:
+
 ```
 docker-compose build
 ```
-This will install the necessary services as well as the dependencies for the client and server.
+
+    This will install the necessary services as well as the dependencies for the client and server.
+
 ##### Note
 
-For the local model example available in the application we use a quantized llama3.1 model pulled from Ollama. This may require you to increase the allocated max disk space from the default in docker. 
+For the local model example available in the application, we use a quantized LLaMA 3.1 model pulled from Ollama. This may require you to increase the allocated max disk space from the default in Docker.
 
 ### Start
 
-To get the application running just run the following command:
+To get the application running, just run the following command:
+
 ```
 docker-compose up
 ```
-The application hosted locally will run on port 3000: 
+
+The application hosted locally will run on port 3000:
 [http://localhost:3000/](http://localhost:3000/)
 
-## How to use
+---
 
-DIRECTIONS 
+## How to Use
 
-![alt text](https://github.com/qcri/RetClean/blob/main/assets/pre_repair.png)
+1. **Upload Your Data**
 
-DIRECTIONS 
+    - Upload your CSV file.
+    - Select the target column to repair.
+    - Choose optional pivot/context columns.
 
-![alt text](https://github.com/qcri/RetClean/blob/main/assets/create_index.png)
+    ![Before Repair](https://github.com/qcri/RetClean/blob/main/assets/pre_repair.png)
 
-DIRECTIONS 
+2. **Use a Data Lake for Cleaning**
 
-![alt text](https://github.com/qcri/RetClean/blob/main/assets/loading.png)
+    - Upload a folder of CSVs to create an indexed datalake.
+    - Indices are managed using FAISS and Elasticsearch.
 
-DIRECTIONS 
+    ![Create Index](https://github.com/qcri/RetClean/blob/main/assets/create_index.png)
 
-![alt text](https://github.com/qcri/RetClean/blob/main/assets/post_repair.png)
+3. **Configure and Start Repair**
 
+    - Choose the reasoner model, index, and re-ranker settings.
+    - Start a repair job.
 
-## Acknowledgments
+    ![Loading Repair](https://github.com/qcri/RetClean/blob/main/assets/loading.png)
 
+4. **Review and Confirm Changes**
 
+    - View the suggested repairs for the target column.
+    - Confirm or adjust changes as needed.
 
+    ![After Repair](https://github.com/qcri/RetClean/blob/main/assets/post_repair.png)
 
+---
 
+## Contribution
+
+We welcome contributions! Feel free to submit issues or pull requests. For significant changes, please open a discussion to ensure alignment with project goals.
+
+---
+
+## License
+
+This project is licensed under the MIT License. See the LICENSE file for details.
