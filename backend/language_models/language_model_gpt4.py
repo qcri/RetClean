@@ -1,28 +1,30 @@
 import os
-import openai
+from openai import AzureOpenAI, OpenAI
 from dotenv import load_dotenv
 
 from .base import LanguageModel
 
 
-class GPT4(LanguageModel):
+class GPT4AzureOpenAI(LanguageModel):
 
     def __init__(self):
         super().__init__(type="cloud")
 
         # Load environment variables from the .env file
         load_dotenv()
-        self.model = "GPT4"
+        self.model = "GPT-4-AzureOpenAI"
         # Retrieve the variables
-        self.api_key = os.getenv("GPT4_API_KEY")
-        self.endpoint = os.getenv("GPT4_ENDPOINT")
-        self.api_version = os.getenv("GPT4_API_VERSION")
-        self.deployment_id = os.getenv("GPT4_DEPLOYMENT_ID")
+        self.api_key = os.getenv("AZURE_OPENAI_API_KEY")
+        self.endpoint = os.getenv("AZURE_OPENAI_ENDPOINT")
+        self.api_version = os.getenv("AZURE_OPENAI_API_VERSION")
+        self.deployment_id = os.getenv("AZURE_OPENAI_DEPLOYMENT")
 
-        openai.api_key = self.api_key
-        openai.api_base = self.endpoint
-        openai.api_type = "azure"
-        openai.api_version = self.api_version
+
+        self.client = AzureOpenAI(
+            api_version=self.api_version,
+            azure_endpoint=self.endpoint,
+            api_key=self.api_key,
+        )
 
     def prompt_wrapper(self, text: str) -> str:
         # Create the messages object for the GPT-4 model
@@ -40,15 +42,79 @@ class GPT4(LanguageModel):
         return messages
 
     def generate(self, text: str, retrieved: list) -> str:
+        # print("I AM HERE IN GPT-4 GENERATE")
+        # print("TEXT:", text)
+        # print("%"*50)
+        # print("PROMPT:", self.prompt_wrapper(text))
         try:
-            response = openai.ChatCompletion.create(
-                engine="gpt4_imputer",  # The deployment name you chose when you deployed the GPT-3.5-Turbo or GPT-4 model.
+            response = self.client.chat.completions.create(
                 messages=text,
-                temperature=0.25,
+                model=self.deployment_id,
             )
+            print("GOT A RESPONSE:", response)
             return self.extract_value_citation(
-                response.choices[0]["message"]["content"], retrieved
+                response.choices[0].message.content, retrieved
             )
+
+        except Exception as e:
+            print("ERROR IN GENERATE", str(e))
+            return {"status": "fail", "message": str(e)}
+        
+
+class GPT4OpenAI(LanguageModel):
+    def __init__(self):
+        super().__init__(type="cloud")
+
+        # --- Load environment variables ---
+        load_dotenv()
+        self.model = "GPT-4-OpenAI"
+        # These correspond exactly to what the OpenAI SDK expects
+        self.api_key = os.getenv("OPENAI_API_KEY")
+        self.org_id = os.getenv("OPENAI_ORG_ID")  # optional
+        self.project_id = os.getenv("OPENAI_PROJECT_ID")  # optional
+        self.model = os.getenv("OPENAI_MODEL", "gpt-4o")  # default to GPT-4o
+
+        # Initialize OpenAI native client
+        # Base URL should remain default unless you’re using a custom proxy
+        self.client = OpenAI(
+            api_key=self.api_key,
+            organization=self.org_id if self.org_id else None,
+            project=self.project_id if self.project_id else None,
+        )
+
+    def prompt_wrapper(self, text: str) -> list[dict]:
+        """Prepare messages for the model."""
+        return [
+            {
+                "role": "system",
+                "content": (
+                    "You are a data expert. Your task is to provide the value of the "
+                    "missing attribute for the given object. If a context is given "
+                    "containing other related objects, use only those to infer the value. "
+                    "If no context is provided, determine the most likely value yourself. "
+                    "Return your answer strictly in this JSON format: "
+                    "{'value': <value>, 'table_name': <'' or source table>, "
+                    "'row_number': <'' or row>, 'object_id': <'' or Object N>} "
+                    "Do not include any explanations."
+                ),
+            },
+            {"role": "user", "content": text},
+        ]
+
+    def generate(self, text: str, retrieved: list) -> str:
+        # print("I AM HERE IN GPT-4 (OpenAI) GENERATE")
+        # print("TEXT:", text)
+        # print("%" * 50)
+        try:
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=text,
+            )
+            print("GOT A RESPONSE:", response)
+            return self.extract_value_citation(
+                response.choices[0].message.content, retrieved
+            )
+
         except Exception as e:
             print("ERROR IN GENERATE", str(e))
             return {"status": "fail", "message": str(e)}

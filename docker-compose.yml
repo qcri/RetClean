@@ -12,6 +12,8 @@ services:
 
   backend:
     build: backend
+    env_file:
+      - .env
     environment:
       - ELASTICSEARCH_URL=http://elasticsearch:9200
       - QDRANT_URL=http://qdrant:6333
@@ -25,6 +27,7 @@ services:
     depends_on:
       - elasticsearch
       - qdrant
+      - ollama
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.7.0
@@ -37,14 +40,18 @@ services:
       - retclean
     ports:
       - "9200:9200"
-    
+
   ollama:
-    build: ./ollama
-    volumes:
-      - ./ollama:/app
+    image: ollama/ollama:latest
+    container_name: ollama
     ports:
-       - "11434:11434"
-   
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - retclean
+    restart: unless-stopped
+
   qdrant:
     image: qdrant/qdrant:latest
     volumes:
@@ -58,6 +65,8 @@ volumes:
   es_storage:
     driver: local
   qdrant_storage:
+    driver: local
+  ollama_data:              # ← add this line
     driver: local
 
 networks:

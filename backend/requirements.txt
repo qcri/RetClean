@@ -5,10 +5,10 @@ uvicorn
 python-multipart
 pandas
 sentence-transformers
-elasticsearch
+elasticsearch>=8.7.0,<9.0.0
 qdrant-client
 python-multipart
-openai==0.28.1
+openai
 ollama
 anthropic
 rerankers
