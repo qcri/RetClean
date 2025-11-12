@@ -36,7 +36,45 @@ RetClean is built using modern tools and frameworks:
 Set up RetClean effortlessly using Docker Compose.
 
 1. Clone this repository and navigate to the project root.
-2. Build the application using:
+2. Create a environment file (.env) in the root folder with the following format:
+```yaml
+# === General Settings ===
+LOG_LEVEL=INFO
+SEARCH_ENABLED=true
+USE_RERANKER=false
+VECTOR_DB=qdrant
+EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2
+
+# === Elasticsearch ===
+ES_HOST=http://elasticsearch:9200
+ES_USER=
+ES_PASSWORD=
+
+# === Qdrant ===
+QDRANT_HOST=http://qdrant
+QDRANT_PORT=6333
+
+# === Azure OpenAI (use these names) ===
+AZURE_OPENAI_API_KEY=<put your info here>
+AZURE_OPENAI_ENDPOINT=<put your info here>
+AZURE_OPENAI_API_VERSION=2024-12-01-preview
+AZURE_OPENAI_DEPLOYMENT=<put your info here>
+
+
+# === OpenAI (use these names) ===
+OPENAI_API_KEY=<put your info here>
+OPENAI_ORG_ID=<put your info here>
+OPENAI_PROJECT_ID=<put your info here>
+OPENAI_MODEL=gpt-4o<put your info here>
+
+# === Ollama (Optional for Local Models) ===
+OLLAMA_URL=http://ollama:11434
+
+# === Backend ===
+BACKEND_PORT=8000
+```
+
+3. Build the application using:
 
 ```
 docker-compose build
